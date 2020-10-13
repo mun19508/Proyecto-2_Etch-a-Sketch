@@ -1,0 +1,99 @@
+MPLINK 5.08, LINKER
+Linker Map File - Created Mon Oct 12 22:59:07 2020
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                 RES_VECT       code   0x000000    program   0x000002
+                   .cinit    romdata   0x000001    program   0x000004
+                 ISR_VECT       code   0x000004    program   0x000036
+                MAIN_PROG       code   0x00001f    program   0x0000b8
+.config_2007_BUILD/DEFAULT/PRODUCTION/PROYECT       code   0x002007    program   0x000002
+.config_2008_BUILD/DEFAULT/PRODUCTION/PROYECT       code   0x002008    program   0x000002
+                   PR_VAR      udata   0x000020       data   0x00000d
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000002      
+                            0x000004    0x00007a      
+                            0x002007    0x002008      
+            124 out of 8455 program addresses used, program memory utilization is 1%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                DELAY_4US   0x000076    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                  DISPLAY   0x000047    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                DISPLAY_0   0x000050    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                DISPLAY_1   0x000055    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                DISPLAY_2   0x00005a    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                DISPLAY_3   0x00005f    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                DISPLAY_4   0x000064    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                DISPLAY_5   0x000069    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                  END_DIS   0x00006e    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                      ISR   0x000007    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                     LOAD   0x00000d    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                     LOOP   0x00003d    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                     SAVE   0x000004    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+          SEPARAR_NIBBLES   0x000040    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                    START   0x00001f    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                    TABLA   0x000013    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                  TOGGLES   0x000070    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+          _MAIN_PROG_005A   0x000079    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                    CONT1   0x000020       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                    CONT2   0x000021       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                DISPLAY_V   0x000022       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                   DISP_L   0x000023       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                   DISX_H   0x000024       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                   DISY_H   0x000026       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                   DISY_L   0x000025       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                    FLAGS   0x00002c       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                      LED   0x000029       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                   NIBB_H   0x000028       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                   NIBB_L   0x000027       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+              TEMP_STATUS   0x00002a       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                   TEMP_W   0x00002b       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     SAVE   0x000004    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                      ISR   0x000007    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                     LOAD   0x00000d    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                    TABLA   0x000013    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                    START   0x00001f    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                     LOOP   0x00003d    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+          SEPARAR_NIBBLES   0x000040    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                  DISPLAY   0x000047    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                DISPLAY_0   0x000050    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                DISPLAY_1   0x000055    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                DISPLAY_2   0x00005a    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                DISPLAY_3   0x00005f    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                DISPLAY_4   0x000064    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                DISPLAY_5   0x000069    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                  END_DIS   0x00006e    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                  TOGGLES   0x000070    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                DELAY_4US   0x000076    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+          _MAIN_PROG_005A   0x000079    program     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                    CONT1   0x000020       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                    CONT2   0x000021       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                DISPLAY_V   0x000022       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                   DISP_L   0x000023       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                   DISX_H   0x000024       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                   DISY_L   0x000025       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                   DISY_H   0x000026       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                   NIBB_L   0x000027       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                   NIBB_H   0x000028       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                      LED   0x000029       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+              TEMP_STATUS   0x00002a       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                   TEMP_W   0x00002b       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+                    FLAGS   0x00002c       data     static C:\Users\Daniel\Documents\GitHub\Proyecto 2_Etch a Sketch\Proyecto_2.X\Proyecto2.asm
+
+

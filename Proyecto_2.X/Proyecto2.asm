@@ -16,10 +16,11 @@
  __CONFIG _CONFIG2, _BOR4V_BOR40V & _WRT_OFF
  
  
- PR_VAR	    UDATA
+PR_VAR		UDATA
 CONT1		    RES 1		    ;Variable para delays
 CONT2		    RES 1		    ;para delays
-DISPX_L	    RES 1		    ;contiene los bits 0 - 99, eje x
+DISPLAY_V	    RES 1
+DISP_L		    RES 1		    ;contiene los bits 0 - 99, eje x
 DISX_H	    RES 1		    ;contiene los valores de  0 - 9, eje x
 DISY_L		    RES 1		    ;contiene los bits 0 - 99, eje y
 DISY_H	    RES 1		    ;contiene los valores de  0 - 9, eje y
@@ -41,7 +42,7 @@ SAVE:					;Sirve para guardar el valor actual de:
     MOVWF	TEMP_STATUS		;& STATUS
 ISR:
     BTFSS	PIR1, ADIF
-    GOTO	LOAD
+    GOTO		LOAD
     BCF		PIR1, ADIF
     MOVFW	ADRESH
     MOVWF	DISPLAY_V
@@ -98,7 +99,7 @@ START
     CLRF		DISPLAY_V		;Se limpian las variables.
     CLRF		NIBB_H
     CLRF		NIBB_L    
-    CLRF		BANDERAS
+    CLRF		FLAGS
     MOVLW	B'01110011'		;Fosc/8, ANS12 & conversion activada.
     MOVWF	ADCON0
     BCF		PIR1, ADIF		;Se apaga la bandera del A/D.
@@ -108,7 +109,82 @@ LOOP:
     CALL		SEPARAR_NIBBLES
     CALL		DISPLAY
     GOTO LOOP
-
-    GOTO $                          ; loop forever
-
+    ;configurar una especie de menu donde se use algun bit para mantener la seleccion del eje 
+    ; los nibbles son los que tienen que ser especificos. restringir el aumento y la disminucion 
+    ;del tercer display.
+;-----------------------------------------Subrutinas--------------------------------------    
+SEPARAR_NIBBLES
+    MOVF		DISPLAY_V, W		
+    ANDLW	B'00001111'		
+    MOVWF	 NIBB_L		
+    SWAPF	DISPLAY_V, W		
+    ANDLW	B'00001111'		
+    MOVWF	NIBB_H		
+    RETURN
+    
+DISPLAY				
+   CLRF		PORTA			    ;valores de las variables.
+    MOVF		FLAGS,W		    ;Dependiendo del actual valor de banderas
+    ADDWF	PCL,F			    ;se selecciona el diplays que va a mostrar su valor:
+    GOTO		DISPLAY_0		    ;Para los displays del eje x
+    GOTO		DISPLAY_1		    ;	    ||
+    GOTO		DISPLAY_2		    ;	    ||
+    GOTO		DISPLAY_3		    ;Para los displays del eje y
+    GOTO		DISPLAY_4		    ;	    ||
+    GOTO		DISPLAY_5		    ;	    ||
+DISPLAY_0:
+   MOVF		NIBB_H, W		
+   CALL		TABLA			
+   MOVWF	PORTD			
+   BSF		PORTA,  0	
+   GOTO		END_DIS
+DISPLAY_1:   
+   MOVF		NIBB_L, W		
+   CALL		TABLA			
+   MOVWF	PORTD			
+   BSF		PORTA,  1		
+   GOTO		END_DIS
+DISPLAY_2:
+   MOVF		NIBB_H, W		
+   CALL		TABLA			
+   MOVWF	PORTD			
+   BSF		PORTA,  2	
+   GOTO		END_DIS
+DISPLAY_3:   
+   MOVF		NIBB_L, W		
+   CALL		TABLA			
+   MOVWF	PORTD			
+   BSF		PORTA,  3		
+   GOTO		END_DIS
+DISPLAY_4:
+   MOVF		NIBB_H, W		
+   CALL		TABLA			
+   MOVWF	PORTD			
+   BSF		PORTA,  4	
+   GOTO		END_DIS
+DISPLAY_5:   
+   MOVF		NIBB_L, W		
+   CALL		TABLA			
+   MOVWF	PORTD			
+   BSF		PORTA,  5		
+   GOTO		END_DIS
+END_DIS:
+  CALL		TOGGLES  
+  RETURN  
+  
+TOGGLES:				;Se incrementa el valor de banderas cada
+    INCF		FLAGS,F		;vez que que se llama a la funcion.
+    MOVLW	.6			;Debido a que hay 6 displays, se resetea
+    SUBWF	FLAGS,W		;la variable cada vez que esta tiene un valor
+    BTFSC	STATUS, Z		;de 6.
+    CLRF		FLAGS
+    RETURN
+ 
+DELAY_4US				;DELAY DE  4us (supuestamente)
+    MOVLW   .25
+    MOVWF   CONT1
+    DECFSZ  CONT1, F	
+    GOTO    $-1 
+   RETURN    
+ 
     END
