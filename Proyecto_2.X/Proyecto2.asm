@@ -100,15 +100,23 @@ START
     CLRF		NIBB_H
     CLRF		NIBB_L    
     CLRF		FLAGS
-    MOVLW	B'01110011'		;Fosc/8, ANS12 & conversion activada.
+EJE_X:
+    MOVLW	B'01100001'		;Fosc/8, ANS8 & conversion activada.
     MOVWF	ADCON0
     BCF		PIR1, ADIF		;Se apaga la bandera del A/D.
     CALL		DELAY_4US
     BSF		ADCON0, GO
-LOOP: 
     CALL		SEPARAR_NIBBLES
     CALL		DISPLAY
-    GOTO LOOP
+EJE_Y: 
+    MOVLW	B'01101001'		;Fosc/8, ANS10 & conversion activada.
+    MOVWF	ADCON0
+    BCF		PIR1, ADIF		;Se apaga la bandera del A/D.
+    CALL		DELAY_4US
+    BSF		ADCON0, GO
+    CALL		SEPARAR_NIBBLES
+    CALL		DISPLAY
+    GOTO		EJE_Y
     ;configurar una especie de menu donde se use algun bit para mantener la seleccion del eje 
     ; los nibbles son los que tienen que ser especificos. restringir el aumento y la disminucion 
     ;del tercer display.
