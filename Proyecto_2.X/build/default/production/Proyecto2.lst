@@ -1,4 +1,4 @@
-MPASM 5.77                     PROYECTO2.ASM   10-14-2020  23:38:32         PAGE  1
+MPASM 5.77                     PROYECTO2.ASM   10-20-2020  23:13:53         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -32,223 +32,247 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00015 ; __config 0xFFFF
 2008   3FFF           00016  __CONFIG _CONFIG2, _BOR4V_BOR40V & _WRT_OFF
                       00017  
-                      00018  
-                      00019 PR_VAR          UDATA
-0000                  00020 CONT1               RES 1                   ;Variable para delays
-0001                  00021 CONT2               RES 1                   ;para delays
-0002                  00022 DISPLAY_V           RES 1
-0003                  00023 DISP_L              RES 1                   ;contiene los bits 0 - 99, eje x
-0004                  00024 DISX_H      RES 1                   ;contiene los valores de  0 - 9, eje x
-0005                  00025 DISY_L              RES 1                   ;contiene los bits 0 - 99, eje y
-0006                  00026 DISY_H      RES 1                   ;contiene los valores de  0 - 9, eje y
-0007                  00027 NIBB_L              RES 1                   ;utilizada para los nibbles menos significativos
-0008                  00028 NIBB_H              RES 1                   ;utilizada para el nibble mas significativo
-0009                  00029 LED                 RES 1                   ;variable para mostrar el valor de los leds
-000A                  00030 TEMP_STATUS         RES 1                   ;para interrupcion
-000B                  00031 TEMP_W      RES 1                   ;para           ||
-000C                  00032 FLAGS               RES 1                   ;para el multiplexeo  
-                      00033 
-                      00034 RES_VECT  CODE    0x0000            ; processor reset vector
-0000   2???           00035     GOTO    START                   ; go to beginning of program
-                      00036     
-                      00037 ;************************************Interrupcion********************************
-                      00038 ISR_VECT   CODE    0X0004
-0004                  00039 SAVE:                                   ;Sirve para guardar el valor actual de:
-0004   00??           00040     MOVWF       TEMP_W          ;"W"
-0005   0E03           00041     SWAPF       STATUS, W
-0006   00??           00042     MOVWF       TEMP_STATUS             ;& STATUS
-MPASM 5.77                     PROYECTO2.ASM   10-14-2020  23:38:32         PAGE  2
+  00000000            00018 VALOR_CERO      EQU     .0
+  00000001            00019 DISPLAYS_X      EQU     .1      
+                      00020 PR_VAR          UDATA
+0000                  00021 CONT1               RES 1                   ;Variable para delays
+0001                  00022 CONT2               RES 1                   ;para delays
+0002                  00023 DISPLAY_V           RES 1
+0003                  00024 DISP_L              RES 1                   ;contiene los bits 0 - 99, eje x
+0004                  00025 DISX_H      RES 1                   ;contiene los valores de  0 - 9, eje x
+0005                  00026 DISY_L              RES 1                   ;contiene los bits 0 - 99, eje y
+0006                  00027 DISY_H      RES 1                   ;contiene los valores de  0 - 9, eje y
+0007                  00028 NIBB_L              RES 1                   ;utilizada para los nibbles menos significativos
+0008                  00029 NIBB_H              RES 1                   ;utilizada para el nibble mas significativo
+0009                  00030 LED                 RES 1                   ;variable para selecionar el eje actual.
+000A                  00031 TEMP_STATUS         RES 1                   ;para interrupcion
+000B                  00032 TEMP_W      RES 1                   ;para           ||
+000C                  00033 FLAGS               RES 1                   ;para el multiplexeo  
+                      00034 
+                      00035 RES_VECT  CODE    0x0000            ; processor reset vector
+0000   2???           00036     GOTO    START                   ; go to beginning of program
+                      00037     
+                      00038 ;************************************Interrupcion********************************
+                      00039 ISR_VECT   CODE    0X0004
+0004                  00040 SAVE:                                   ;Sirve para guardar el valor actual de:
+0004   00??           00041     MOVWF       TEMP_W          ;"W"
+0005   0E03           00042     SWAPF       STATUS, W
+MPASM 5.77                     PROYECTO2.ASM   10-20-2020  23:13:53         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0007                  00043 ISR:
-0007   1F0C           00044     BTFSS       PIR1, ADIF
-0008   2???           00045     GOTO                LOAD
-0009   130C           00046     BCF         PIR1, ADIF
-000A   081E           00047     MOVFW       ADRESH
-000B   00??           00048     MOVWF       DISPLAY_V
-000C   149F           00049     BSF         ADCON0, GO
-000D                  00050 LOAD:                                   ;Se recupera el valor de:
-000D   0E??           00051     SWAPF       TEMP_STATUS, W
-000E   0083           00052     MOVWF       STATUS          ;STATUS
-000F   0E??           00053     SWAPF       TEMP_W, F
-0010   0E??           00054     SWAPF       TEMP_W, W               ;& de "W"
-0011   178B           00055     BSF         INTCON, GIE             ;se habilitan la interrupciones globales
-0012   0009           00056     RETFIE
-                      00057 ;-------------------------------------Tabla----------------------------------------------
-0013                  00058 TABLA
-0013   0782           00059     ADDWF PCL , F
-                      00060                 ;    PCDEGFAB
-0014   3477           00061     RETLW       B'01110111'   ; 0 EN EL DISPLAY
-0015   3441           00062     RETLW       B'01000001' ; 1
-0016   343B           00063     RETLW       B'00111011' ; 2
-0017   346B           00064     RETLW       B'01101011' ; 3
-0018   344D           00065     RETLW       B'01001101' ; 4
-0019   346E           00066     RETLW       B'01101110' ; 5
-001A   347E           00067     RETLW       B'01111110' ; 6
-001B   3443           00068     RETLW       B'01000011' ; 7
-001C   347F           00069     RETLW       B'01111111' ; 8
-001D   346F           00070     RETLW       B'01101111' ; 9
-001E   0008           00071  RETURN
-                      00072 
-                      00073 MAIN_PROG CODE                      ; let linker place main program
-                      00074  
-0000                  00075 START
-0000   1703           00076     BSF          STATUS, 6
-0001   1683           00077     BSF         STATUS, 5               ;--------------------Banco 3----------------
+0006   00??           00043     MOVWF       TEMP_STATUS             ;& STATUS
+0007                  00044 ISR:
+0007   1F0C           00045     BTFSS       PIR1, ADIF
+0008   2???           00046     GOTO                LOAD
+0009   130C           00047     BCF         PIR1, ADIF
+000A   081E           00048     MOVFW       ADRESH
+000B   00??           00049     MOVWF       DISPLAY_V
+000C   149F           00050     BSF         ADCON0, GO
+000D                  00051 LOAD:                                   ;Se recupera el valor de:
+000D   0E??           00052     SWAPF       TEMP_STATUS, W
+000E   0083           00053     MOVWF       STATUS          ;STATUS
+000F   0E??           00054     SWAPF       TEMP_W, F
+0010   0E??           00055     SWAPF       TEMP_W, W               ;& de "W"
+0011   178B           00056     BSF         INTCON, GIE             ;se habilitan la interrupciones globales
+0012   0009           00057     RETFIE
+                      00058 ;-------------------------------------Tabla----------------------------------------------
+0013                  00059 TABLA
+0013   0782           00060     ADDWF PCL , F
+                      00061                 ;    PCDEGFAB
+0014   3477           00062     RETLW       B'01110111'   ; 0 EN EL DISPLAY
+0015   3441           00063     RETLW       B'01000001' ; 1
+0016   343B           00064     RETLW       B'00111011' ; 2
+0017   346B           00065     RETLW       B'01101011' ; 3
+0018   344D           00066     RETLW       B'01001101' ; 4
+0019   346E           00067     RETLW       B'01101110' ; 5
+001A   347E           00068     RETLW       B'01111110' ; 6
+001B   3443           00069     RETLW       B'01000011' ; 7
+001C   347F           00070     RETLW       B'01111111' ; 8
+001D   346F           00071     RETLW       B'01101111' ; 9
+001E   0008           00072  RETURN
+                      00073 
+                      00074 MAIN_PROG CODE                      ; let linker place main program
+                      00075  
+0000                  00076 START
+0000   1703           00077     BSF          STATUS, 6
+0001   1683           00078     BSF         STATUS, 5               ;--------------------Banco 3----------------
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0002   0188           00078     CLRF                ANSEL
+0002   0188           00079     CLRF                ANSEL
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0003   0189           00079     CLRF                ANSELH
+0003   0189           00080     CLRF                ANSELH
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0004   1409           00080     BSF         ANSELH,  ANS8           ;Se habilita el analogico en B1
+0004   1409           00081     BSF         ANSELH,  ANS8           ;Se habilita el analogico en B1
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0005   1509           00081     BSF         ANSELH, ANS10           ;Se habilita el analogico en B2
-0006   1303           00082     BCF         STATUS, 6               ;-------------------Banco 1------------------
-0007   3006           00083     MOVLW       B'00000110'
+0005   1509           00082     BSF         ANSELH, ANS10           ;Se habilita el analogico en B2
+0006   1303           00083     BCF         STATUS, 6               ;-------------------Banco 1------------------
+0007   3006           00084     MOVLW       B'00000110'
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0008   0086           00084     MOVWF       TRISB                   ;Solo B1 & B2 como entrada.
+0008   0086           00085     MOVWF       TRISB                   ;Solo B1 & B2 como entrada.
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0009   0185           00085     CLRF                TRISA                   ;Seleccion de displays.
+0009   0185           00086     CLRF                TRISA                   ;Seleccion de displays.
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-000A   0188           00086     CLRF                TRISD                   ;Displays. 
-                      00087     ;------------------------Configuracion de ADC-----------------------------------------
-Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-MPASM 5.77                     PROYECTO2.ASM   10-14-2020  23:38:32         PAGE  3
+000A   0188           00087     CLRF                TRISD                   ;Displays. 
+                      00088     ;------------------------Configuracion de ADC-----------------------------------------
+MPASM 5.77                     PROYECTO2.ASM   10-20-2020  23:13:53         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-000B   139F           00088     BCF         ADCON1, ADFM            ;Justificado a la izquierda.
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-000C   129F           00089     BCF         ADCON1, VCFG1           ;Ref: VSS.
+000B   139F           00089     BCF         ADCON1, ADFM            ;Justificado a la izquierda.
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-000D   121F           00090     BCF         ADCON1, VCFG0           ;Ref: VDD.
-                      00091     ;-------------------Configuracion de Interrupcion--------------------------------------
-000E   178B           00092     BSF         INTCON, GIE             ;Se habilitaron la interrupciones globales,
-000F   170B           00093     BSF         INTCON, PEIE            ;perifericas,
+000C   129F           00090     BCF         ADCON1, VCFG1           ;Ref: VSS.
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0010   170C           00094     BSF         PIE1, ADIE              ;y la interrupciones por el A/D.
-0011   1283           00095     BCF         STATUS, 5               ;-------------------Banco 0------------------
-0012   0185           00096     CLRF                PORTA                   ;Se limpian los puertos.
-0013   0186           00097     CLRF                PORTB
-0014   0188           00098     CLRF                PORTD
-0015   01??           00099     CLRF                DISPLAY_V               ;Se limpian las variables.
-0016   01??           00100     CLRF                NIBB_H
-0017   01??           00101     CLRF                NIBB_L    
-0018   01??           00102     CLRF                FLAGS
-0019                  00103 EJE_X:
-0019   3061           00104     MOVLW       B'01100001'             ;Fosc/8, ANS8 & conversion activada.
-001A   009F           00105     MOVWF       ADCON0
-001B   130C           00106     BCF         PIR1, ADIF              ;Se apaga la bandera del A/D.
-001C   2???           00107     CALL                DELAY_4US
-001D   149F           00108     BSF         ADCON0, GO
-001E   2???           00109     CALL                SEPARAR_NIBBLES
-001F   2???           00110     CALL                DISPLAY
-0020                  00111 EJE_Y: 
-0020   3069           00112     MOVLW       B'01101001'             ;Fosc/8, ANS10 & conversion activada.
-0021   009F           00113     MOVWF       ADCON0
-0022   130C           00114     BCF         PIR1, ADIF              ;Se apaga la bandera del A/D.
-0023   2???           00115     CALL                DELAY_4US
-0024   149F           00116     BSF         ADCON0, GO
-0025   2???           00117     CALL                SEPARAR_NIBBLES
-0026   2???           00118     CALL                DISPLAY
-0027   2???           00119     GOTO                EJE_Y
-                      00120     ;configurar una especie de menu donde se use algun bit para mantener la seleccion del eje 
-                      00121     ; los nibbles son los que tienen que ser especificos. restringir el aumento y la disminucion 
-                      00122     ;del tercer display.
-                      00123 ;-----------------------------------------Subrutinas--------------------------------------    
-0028                  00124 SEPARAR_NIBBLES
-0028   08??           00125     MOVF                DISPLAY_V, W            
-0029   390F           00126     ANDLW       B'00001111'             
-002A   00??           00127     MOVWF        NIBB_L         
-002B   0E??           00128     SWAPF       DISPLAY_V, W            
-002C   390F           00129     ANDLW       B'00001111'             
-002D   00??           00130     MOVWF       NIBB_H          
-002E   0008           00131     RETURN
-                      00132     
-002F                  00133 DISPLAY                         
-002F   0185           00134    CLRF         PORTA                       ;valores de las variables.
-0030   08??           00135     MOVF                FLAGS,W             ;Dependiendo del actual valor de banderas
-0031   0782           00136     ADDWF       PCL,F                       ;se selecciona el diplays que va a mostrar su valor:
-0032   2???           00137     GOTO                DISPLAY_0                   ;Para los displays del eje x
-MPASM 5.77                     PROYECTO2.ASM   10-14-2020  23:38:32         PAGE  4
+000D   121F           00091     BCF         ADCON1, VCFG0           ;Ref: VDD.
+                      00092     ;-------------------Configuracion de Interrupcion--------------------------------------
+000E   178B           00093     BSF         INTCON, GIE             ;Se habilitaron la interrupciones globales,
+000F   170B           00094     BSF         INTCON, PEIE            ;perifericas,
+                      00095     ;BSF                PIE1, ADIE              ;y la interrupciones por el A/D.
+0010   1283           00096     BCF         STATUS, 5               ;-------------------Banco 0------------------
+0011   0185           00097     CLRF                PORTA                   ;Se limpian los puertos.
+0012   0186           00098     CLRF                PORTB
+0013   0188           00099     CLRF                PORTD
+0014   01??           00100     CLRF                DISPLAY_V               ;Se limpian las variables.
+0015   01??           00101     CLRF                NIBB_H
+0016   01??           00102     CLRF                NIBB_L    
+0017   01??           00103     CLRF                FLAGS    
+0018                  00104 EJE_X:
+0018   01??           00105     CLRF                LED
+0019   3061           00106     MOVLW       B'01100001'             ;Fosc/8, ANS8 & conversion activada.
+001A   009F           00107     MOVWF       ADCON0
+                      00108     ;BCF                PIR1, ADIF              ;Se apaga la bandera del A/D.
+001B   2???           00109     CALL                DELAY_4US
+001C   149F           00110     BSF         ADCON0, GO
+001D   189F           00111     BTFSC       ADCON0, GO
+001E   2???           00112     GOTO                $-1
+001F   081E           00113     MOVFW       ADRESH
+0020   00??           00114     MOVWF       DISPLAY_V
+0021   2???           00115     CALL                SEPARAR_NIBBLES
+0022   2???           00116     CALL                DISPLAY
+0023                  00117 EJE_Y: 
+0023   1400           00118     BSF         LED, VALOR_CERO
+0024   3069           00119     MOVLW       B'01101001'             ;Fosc/8, ANS10 & conversion activada.
+0025   009F           00120     MOVWF       ADCON0
+0026   130C           00121     BCF         PIR1, ADIF              ;Se apaga la bandera del A/D.
+0027   2???           00122     CALL                DELAY_4US
+0028   149F           00123     BSF         ADCON0, GO
+0029   189F           00124    BTFSC                ADCON0, GO
+002A   2???           00125     GOTO                $-1
+002B   081E           00126     MOVFW       ADRESH
+002C   00??           00127     MOVWF       DISPLAY_V
+002D   2???           00128     CALL                SEPARAR_NIBBLES
+002E   2???           00129     CALL                DISPLAY
+002F                  00130 FIN:    
+002F   2???           00131     CALL                TOGGLES  
+0030   2???           00132     GOTO                EJE_X
+                      00133     ;configurar una especie de menu donde se use algun bit para mantener la seleccion del eje 
+                      00134     ; los nibbles son los que tienen que ser especificos. restringir el aumento y la disminucion 
+                      00135     ;del tercer display.
+                      00136 ;-----------------------------------------Subrutinas--------------------------------------    
+0031                  00137 SEPARAR_NIBBLES
+0031   08??           00138     MOVF                DISPLAY_V, W            
+MPASM 5.77                     PROYECTO2.ASM   10-20-2020  23:13:53         PAGE  4
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0033   2???           00138     GOTO                DISPLAY_1                   ;       ||
-0034   2???           00139     GOTO                DISPLAY_2                   ;       ||
-0035   2???           00140     GOTO                DISPLAY_3                   ;Para los displays del eje y
-0036   2???           00141     GOTO                DISPLAY_4                   ;       ||
-0037   2???           00142     GOTO                DISPLAY_5                   ;       ||
-0038                  00143 DISPLAY_0:
-0038   08??           00144    MOVF         NIBB_H, W               
-0039   2???           00145    CALL         TABLA                   
-003A   0088           00146    MOVWF        PORTD                   
-003B   1405           00147    BSF          PORTA,  0       
-003C   2???           00148    GOTO         END_DIS
-003D                  00149 DISPLAY_1:   
-003D   08??           00150    MOVF         NIBB_L, W               
-003E   2???           00151    CALL         TABLA                   
-003F   0088           00152    MOVWF        PORTD                   
-0040   1485           00153    BSF          PORTA,  1               
-0041   2???           00154    GOTO         END_DIS
-0042                  00155 DISPLAY_2:
-0042   08??           00156    MOVF         NIBB_H, W               
-0043   2???           00157    CALL         TABLA                   
-0044   0088           00158    MOVWF        PORTD                   
-0045   1505           00159    BSF          PORTA,  2       
-0046   2???           00160    GOTO         END_DIS
-0047                  00161 DISPLAY_3:   
-0047   08??           00162    MOVF         NIBB_L, W               
-0048   2???           00163    CALL         TABLA                   
-0049   0088           00164    MOVWF        PORTD                   
-004A   1585           00165    BSF          PORTA,  3               
-004B   2???           00166    GOTO         END_DIS
-004C                  00167 DISPLAY_4:
-004C   08??           00168    MOVF         NIBB_H, W               
-004D   2???           00169    CALL         TABLA                   
-004E   0088           00170    MOVWF        PORTD                   
-004F   1605           00171    BSF          PORTA,  4       
-0050   2???           00172    GOTO         END_DIS
-0051                  00173 DISPLAY_5:   
-0051   08??           00174    MOVF         NIBB_L, W               
-0052   2???           00175    CALL         TABLA                   
-0053   0088           00176    MOVWF        PORTD                   
-0054   1685           00177    BSF          PORTA,  5               
-0055   2???           00178    GOTO         END_DIS
-0056                  00179 END_DIS:
-0056   2???           00180   CALL          TOGGLES  
-0057   0008           00181   RETURN  
-                      00182   
-0058                  00183 TOGGLES:                                ;Se incrementa el valor de banderas cada
-0058   0A??           00184     INCF                FLAGS,F         ;vez que que se llama a la funcion.
-0059   3006           00185     MOVLW       .6                      ;Debido a que hay 6 displays, se resetea
-005A   02??           00186     SUBWF       FLAGS,W         ;la variable cada vez que esta tiene un valor
-005B   1903           00187     BTFSC       STATUS, Z               ;de 6.
-005C   01??           00188     CLRF                FLAGS
-005D   0008           00189     RETURN
-                      00190  
-MPASM 5.77                     PROYECTO2.ASM   10-14-2020  23:38:32         PAGE  5
+0032   390F           00139     ANDLW       B'00001111'             
+0033   00??           00140     MOVWF        NIBB_L         
+0034   0E??           00141     SWAPF       DISPLAY_V, W            
+0035   390F           00142     ANDLW       B'00001111'             
+0036   00??           00143     MOVWF       NIBB_H          
+0037   0008           00144     RETURN
+                      00145     
+0038                  00146 DISPLAY                         
+0038   0185           00147    CLRF         PORTA                       ;valores de las variables.
+0039   08??           00148     MOVF                FLAGS,W             ;Dependiendo del actual valor de banderas
+003A   0782           00149     ADDWF       PCL,F                       ;se selecciona el diplays que va a mostrar su valor:
+003B   2???           00150    GOTO         DISPLAY_0                   ;Para los displays del eje x
+003C   2???           00151     GOTO                DISPLAY_1                   ;       ||
+003D   2???           00152     GOTO                DISPLAY_2                   ;       ||
+                      00153     ;GOTO               DISPLAY_3                   ;Para los displays del eje y
+                      00154  ;  GOTO                DISPLAY_4                   ;       ||
+                      00155     ;GOTO               DISPLAY_5                   ;       ||
+003E                  00156 DISPLAY_0:
+003E   08??           00157    MOVF         NIBB_H, W               
+003F   2???           00158    CALL         TABLA                   
+0040   0088           00159    MOVWF        PORTD   
+0041   1800           00160    BTFSC                LED, VALOR_CERO
+0042   2???           00161    GOTO         $+3
+0043   1405           00162    BSF          PORTA,  0
+0044   2???           00163    GOTO         END_DIS
+0045   1585           00164    BSF          PORTA,  3       
+0046   2???           00165    GOTO         END_DIS
+0047                  00166 DISPLAY_1:   
+0047   08??           00167    MOVF         NIBB_L, W               
+0048   2???           00168    CALL         TABLA                   
+0049   0088           00169    MOVWF        PORTD
+004A   1800           00170   BTFSC         LED, VALOR_CERO
+004B   2???           00171    GOTO         $+3
+004C   1485           00172    BSF          PORTA,  1
+004D   2???           00173    GOTO         END_DIS
+004E   1605           00174    BSF          PORTA,  4       
+004F   2???           00175    GOTO         END_DIS
+0050                  00176 DISPLAY_2:
+0050   08??           00177    MOVF         NIBB_H, W               
+0051   2???           00178    CALL         TABLA
+0052   0088           00179    MOVWF        PORTD
+0053   1800           00180    BTFSC        LED, VALOR_CERO 
+0054   2???           00181    GOTO         $+3
+0055   1505           00182    BSF          PORTA,  2
+0056   2???           00183    GOTO         END_DIS
+0057   1685           00184    BSF          PORTA,  5       
+0058   2???           00185    GOTO         END_DIS
+                      00186 ;DISPLAY_3:   
+                      00187  ;  MOVF                NIBB_L, W               
+                      00188   ; CALL                TABLA                   
+                      00189   ; MOVWF       PORTD                   
+                      00190    ;BSF         PORTA,  3               
+                      00191    ;GOTO                END_DIS
+MPASM 5.77                     PROYECTO2.ASM   10-20-2020  23:13:53         PAGE  5
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-005E                  00191 DELAY_4US                               ;DELAY DE  4us (supuestamente)
-005E   3019           00192     MOVLW   .25
-005F   00??           00193     MOVWF   CONT1
-0060   0B??           00194     DECFSZ  CONT1, F    
-0061   2???           00195     GOTO    $-1 
-0062   0008           00196    RETURN    
-                      00197  
-20D4 3FFF             00198     END
-MPASM 5.77                     PROYECTO2.ASM   10-14-2020  23:38:32         PAGE  6
+                      00192 ;DISPLAY_4:
+                      00193   ; MOVF                NIBB_H, W               
+                      00194  ;  CALL                TABLA                   
+                      00195   ; MOVWF       PORTD                   
+                      00196   ; BSF         PORTA,  4       
+                      00197   ; GOTO                END_DIS
+                      00198 ;DISPLAY_5:   
+                      00199   ; MOVF                NIBB_L, W               
+                      00200    ;CALL                TABLA
+                      00201  ;  MOVLW       VALOR_CERO
+                      00202  ;  MOVWF       PORTD                   
+                      00203 ;   BSF         PORTA,  5               
+                      00204    ;GOTO                END_DIS
+0059                  00205 END_DIS:
+0059   0008           00206   RETURN  
+                      00207   
+005A                  00208 TOGGLES:                                ;Se incrementa el valor de banderas cada
+005A   0A??           00209     INCF                FLAGS,F         ;vez que que se llama a la funcion.
+005B   3003           00210     MOVLW       .3                      ;Debido a que hay 6 displays, se resetea
+005C   02??           00211     SUBWF       FLAGS,W         ;la variable cada vez que esta tiene un valor
+005D   1903           00212     BTFSC       STATUS, Z               ;de 6.
+005E   01??           00213     CLRF                FLAGS
+005F   0008           00214     RETURN
+                      00215  
+0060                  00216 DELAY_4US                               ;DELAY DE  4us (supuestamente)
+0060   3019           00217     MOVLW   .25
+0061   00??           00218     MOVWF   CONT1
+0062   0B??           00219     DECFSZ  CONT1, F    
+0063   2???           00220     GOTO    $-1 
+0064   0008           00221    RETURN    
+                      00222  
+20D4 3FFF             00223     END
+MPASM 5.77                     PROYECTO2.ASM   10-20-2020  23:13:53         PAGE  6
 
 
 SYMBOL TABLE
@@ -307,7 +331,7 @@ BRG6                              00000006
 BRG7                              00000007
 BRG8                              00000000
 BRG9                              00000001
-MPASM 5.77                     PROYECTO2.ASM   10-14-2020  23:38:32         PAGE  7
+MPASM 5.77                     PROYECTO2.ASM   10-20-2020  23:13:53         PAGE  7
 
 
 SYMBOL TABLE
@@ -366,7 +390,7 @@ CHS0                              00000002
 CHS1                              00000003
 CHS2                              00000004
 CHS3                              00000005
-MPASM 5.77                     PROYECTO2.ASM   10-14-2020  23:38:32         PAGE  8
+MPASM 5.77                     PROYECTO2.ASM   10-20-2020  23:13:53         PAGE  8
 
 
 SYMBOL TABLE
@@ -388,14 +412,12 @@ DC1B0                             00000004
 DC1B1                             00000005
 DC2B0                             00000004
 DC2B1                             00000005
-DELAY_4US                         0000005E
-DISPLAY                           0000002F
-DISPLAY_0                         00000038
-DISPLAY_1                         0000003D
-DISPLAY_2                         00000042
-DISPLAY_3                         00000047
-DISPLAY_4                         0000004C
-DISPLAY_5                         00000051
+DELAY_4US                         00000060
+DISPLAY                           00000038
+DISPLAYS_X                        00000001
+DISPLAY_0                         0000003E
+DISPLAY_1                         00000047
+DISPLAY_2                         00000050
 DISPLAY_V                         00000002
 DISP_L                            00000003
 DISX_H                            00000004
@@ -418,20 +440,21 @@ EEDATH                            0000010E
 EEIE                              00000004
 EEIF                              00000004
 EEPGD                             00000007
-EJE_X                             00000019
-EJE_Y                             00000020
-END_DIS                           00000056
+EJE_X                             00000018
+EJE_Y                             00000023
+END_DIS                           00000059
 F                                 00000001
 FERR                              00000002
+FIN                               0000002F
 FLAGS                             0000000C
 FSR                               00000004
-MPASM 5.77                     PROYECTO2.ASM   10-14-2020  23:38:32         PAGE  9
+FVREN                             00000000
+MPASM 5.77                     PROYECTO2.ASM   10-20-2020  23:13:53         PAGE  9
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
-FVREN                             00000000
 GCEN                              00000007
 GIE                               00000007
 GO                                00000001
@@ -484,13 +507,13 @@ NOT_BOR                           00000000
 NOT_DONE                          00000001
 NOT_PD                            00000003
 NOT_POR                           00000001
-MPASM 5.77                     PROYECTO2.ASM   10-14-2020  23:38:32         PAGE 10
+NOT_RBPU                          00000007
+MPASM 5.77                     PROYECTO2.ASM   10-20-2020  23:13:53         PAGE 10
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
-NOT_RBPU                          00000007
 NOT_RC8                           00000006
 NOT_T1SYNC                        00000002
 NOT_TO                            00000004
@@ -543,13 +566,13 @@ PULSR                             00000002
 PULSS                             00000003
 PWM1CON                           0000009B
 R                                 00000002
-MPASM 5.77                     PROYECTO2.ASM   10-14-2020  23:38:32         PAGE 11
+RA0                               00000000
+MPASM 5.77                     PROYECTO2.ASM   10-20-2020  23:13:53         PAGE 11
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
-RA0                               00000000
 RA1                               00000001
 RA2                               00000002
 RA3                               00000003
@@ -602,13 +625,13 @@ RP0                               00000005
 RP1                               00000006
 RSEN                              00000001
 RX9                               00000006
-MPASM 5.77                     PROYECTO2.ASM   10-14-2020  23:38:32         PAGE 12
+RX9D                              00000000
+MPASM 5.77                     PROYECTO2.ASM   10-20-2020  23:13:53         PAGE 12
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
-RX9D                              00000000
 R_NOT_W                           00000002
 R_W                               00000002
 S                                 00000003
@@ -618,7 +641,7 @@ SCKP                              00000004
 SCS                               00000000
 SEN                               00000000
 SENDB                             00000003
-SEPARAR_NIBBLES                   00000028
+SEPARAR_NIBBLES                   00000031
 SMP                               00000007
 SPBRG                             00000099
 SPBRGH                            0000009A
@@ -661,13 +684,13 @@ T1GINV                            00000007
 T1GIV                             00000007
 T1GSS                             00000001
 T1INSYNC                          00000002
-MPASM 5.77                     PROYECTO2.ASM   10-14-2020  23:38:32         PAGE 13
+T1OSCEN                           00000003
+MPASM 5.77                     PROYECTO2.ASM   10-20-2020  23:13:53         PAGE 13
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
-T1OSCEN                           00000003
 T1SYNC                            00000002
 T2CKPS0                           00000000
 T2CKPS1                           00000001
@@ -690,7 +713,7 @@ TMR2                              00000011
 TMR2IE                            00000001
 TMR2IF                            00000001
 TMR2ON                            00000002
-TOGGLES                           00000058
+TOGGLES                           0000005A
 TOUTPS0                           00000003
 TOUTPS1                           00000004
 TOUTPS2                           00000005
@@ -720,13 +743,13 @@ TRISC2                            00000002
 TRISC3                            00000003
 TRISC4                            00000004
 TRISC5                            00000005
-MPASM 5.77                     PROYECTO2.ASM   10-14-2020  23:38:32         PAGE 14
+TRISC6                            00000006
+MPASM 5.77                     PROYECTO2.ASM   10-20-2020  23:13:53         PAGE 14
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
-TRISC6                            00000006
 TRISC7                            00000007
 TRISD                             00000088
 TRISD0                            00000000
@@ -761,6 +784,7 @@ UA                                00000001
 ULPWUE                            00000005
 ULPWUIE                           00000002
 ULPWUIF                           00000002
+VALOR_CERO                        00000000
 VCFG0                             00000004
 VCFG1                             00000005
 VR0                               00000000
@@ -779,7 +803,7 @@ WDTPS0                            00000001
 WDTPS1                            00000002
 WDTPS2                            00000003
 WDTPS3                            00000004
-MPASM 5.77                     PROYECTO2.ASM   10-14-2020  23:38:32         PAGE 15
+MPASM 5.77                     PROYECTO2.ASM   10-20-2020  23:13:53         PAGE 15
 
 
 SYMBOL TABLE
@@ -838,7 +862,7 @@ _FOSC_XT                          00003FF9
 _HS_OSC                           00003FFA
 _IDLOC0                           00002000
 _IDLOC1                           00002001
-MPASM 5.77                     PROYECTO2.ASM   10-14-2020  23:38:32         PAGE 16
+MPASM 5.77                     PROYECTO2.ASM   10-20-2020  23:13:53         PAGE 16
 
 
 SYMBOL TABLE
@@ -855,7 +879,12 @@ _INTRC_OSC_NOCLKOUT               00003FFC
 _LP_OSC                           00003FF8
 _LVP_OFF                          00002FFF
 _LVP_ON                           00003FFF
-_MAIN_PROG_0061                   00000061
+_MAIN_PROG_001E                   0000001E
+_MAIN_PROG_002A                   0000002A
+_MAIN_PROG_0042                   00000042
+_MAIN_PROG_004B                   0000004B
+_MAIN_PROG_0054                   00000054
+_MAIN_PROG_0063                   00000063
 _MCLRE_OFF                        00003FDF
 _MCLRE_ON                         00003FFF
 _PWRTE_OFF                        00003FFF
@@ -873,6 +902,6 @@ __16F887                          00000001
 
 Errors   :     0
 Warnings :     0 reported,     0 suppressed
-Messages :    11 reported,     0 suppressed
+Messages :    10 reported,     0 suppressed
 
 
