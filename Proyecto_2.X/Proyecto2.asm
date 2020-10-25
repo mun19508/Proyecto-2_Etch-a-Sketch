@@ -17,6 +17,11 @@
 ;-----------------------------------Constantes------------------------------------------- 
 VALOR_CERO	EQU	.0
 DISPLAYS_X	EQU	.1	
+COMA		EQU	.44
+CON_ASCII	EQU	.48
+CONFG_TMR0	EQU	.129
+CONT_TMR0	EQU	.6
+NUEVA_LINEA	EQU	.10
 ;*********************************Variables**************************************
 PR_VAR		UDATA
 ;---------------------------------------Delays--------------------------------------------
@@ -59,28 +64,35 @@ SAVE:					;Sirve para guardar el valor actual de:
     SWAPF	STATUS, W
     MOVWF	TEMP_STATUS		;& STATUS
 ISR:
-    BTFSS	PIR1, ADIF
+    BTFSS	INTCON, T0IF		;Interrupcion del TRM0
+    GOTO		MUX
+    BTFSS	PIR1, ADIF		;Interrupcion del ADC
     GOTO		ADC_C
-    BTFSS	PIR1, RCIF		
+    BTFSS	PIR1, RCIF		;Interrupcion de la recepcion
     GOTO		RECEPCION
-ADC_C:
-    ;Configurar este apartado para cambiar de canal: ADCON, 2 =1 -> AN9 & ADCON, 2 =1 -> AN8
-    BTFSC	ADCON, 2
+MUX:
+    MOVLW	CONT_TMR0
+    MOVWF	TMR0
+    CALL		DISPLAY
+    INCF		FLAGS, F
+    GOTO		LOAD
+ADC_C:		;Configurar este apartado para cambiar de canal: ADCON, 2 =1 -> AN9 & ADCON, 2 =1 -> AN8    
+    BTFSC	ADCON0, 2
     GOTO		DATA_Y
     BCF		PIR1, ADIF
     MOVFW	ADRESH
     MOVWF	VAR_X
-    BSF		ADCON, 2 
+    BSF		ADCON0, 2 
    GOTO		INICIO_CON
 DATA_Y:
     BCF		PIR1, ADIF
     MOVFW	ADRESH
     MOVWF	VAR_Y
-    BCF		ADCON, 2 
+    BCF		ADCON0, 2 
     GOTO		INICIO_CON
 RECEPCION:
     MOVFW	RCREG			;Se mueve el valor recibido
-    MOVWF	DISPLAY_V		;a la variable de los displays
+    MOVWF	VAR_CDU		;a la variable de los displays
     GOTO		LOAD
 INICIO_CON:
     NOP
@@ -98,7 +110,7 @@ LOAD:					;Se recupera el valor de:
     RETFIE
 ;-------------------------------------Tabla----------------------------------------------
 TABLA
-    ADDWF PCL , F
+    ADDWF	PCL , F
 		;    PCDEGFAB
     RETLW	B'01110111'   ; 0 EN EL DISPLAY
     RETLW	B'01000001' ; 1
@@ -111,8 +123,56 @@ TABLA
     RETLW	B'01111111' ; 8
     RETLW	B'01101111' ; 9
  RETURN
-
-MAIN_PROG CODE                      ; let linker place main program
+ 
+DISPLAY				
+    CLRF		PORTA			    ;valores de las variables.
+    MOVF		FLAGS,W		    ;Dependiendo del actual valor de banderas
+    ADDWF	PCL,F			    ;se selecciona el diplays que va a mostrar su valor:
+    GOTO		DISPLAY_0		    ;Para los displays del eje x
+    GOTO		DISPLAY_1		    ;	    ||
+    GOTO		DISPLAY_2		    ;	    ||
+    GOTO		DISPLAY_3		    ;Para los displays del eje y
+    GOTO		DISPLAY_4		    ;	    ||
+    GOTO		DISPLAY_5		    ;	    ||
+    CLRF		FLAGS
+DISPLAY_0:					;Unidades de 'x'.
+   MOVF		DISX_L, W		
+   CALL		TABLA			
+   MOVWF	PORTD	
+   BSF		PORTA,  0
+   RETURN
+DISPLAY_1:					;Decenas de 'x'.
+   MOVF		DISX_M, W		
+   CALL		TABLA			
+   MOVWF	PORTD
+   BSF		PORTA,  1
+   RETURN
+DISPLAY_2:					;Centenas de 'x'.
+   MOVF		DISX_H, W
+   CALL		TABLA
+   MOVWF	PORTD
+   BSF		PORTA,  2
+   RETURN
+DISPLAY_3:					;Unidades de 'y'
+    MOVF		DISY_L, W
+    CALL		TABLA			
+   MOVWF	PORTD			
+   BSF		PORTA,  3		
+   RETURN
+DISPLAY_4:					;Decenas de 'y'.
+    MOVF		DISY_M, W		
+   CALL		TABLA			
+   MOVWF	PORTD			
+   BSF		PORTA,  4	
+   RETURN
+DISPLAY_5:					;Centenas de 'y'.
+    MOVF		DISY_H, W
+    CALL		TABLA
+   MOVWF	PORTD			
+   BSF		PORTA,  5		
+    RETURN  
+    
+MAIN_PROG	CODE                      ; let linker place main program
  
 START
     BSF		 STATUS, 6
@@ -137,8 +197,11 @@ START
     BSF		TXSTA,  5		;Bit de transmicion activo. 
     BCF		TXSTA,  6		;Transmicion de 8 bits. 
     ;-------------------Configuracion de Interrupcion--------------------------------------
+   MOVLW	CONFG_TMR0
+   MOVWF	OPTION_REG 
     BSF		INTCON, GIE		;Se habilitaron la interrupciones globales,
     BSF		INTCON, PEIE		;perifericas,
+    BSF		INTCON, T0IE 		;del TRM0.
     BSF		PIE1, ADIE		;y la interrupciones por el A/D.
     MOVLW	B'01100001'		;Fosc/8, ANS8 & conversion activada.
     MOVWF	ADCON0
@@ -177,140 +240,106 @@ START
 LOOP:
 ;-------------------------------------Eje x-----------------------------------------------
     MOVF		VAR_X, W
-    MOVWF	VAR_CDU
-    CALL		CONV_NO
+    MOVWF	VAR_CDU		;Se mueve el valor del ADC a la variable general
+    CALL		CONV_NO		;Se llama a la funcion para pasar el valor de unidades, decenas y centenas
     
     MOVF		VAR_C, W
-    MOVWF	VARX_C
+    MOVWF	VARX_C		;Valor de las centanas que se van a enviar
     
     MOVF		VAR_D, W
-    MOVWF	VARX_D
+    MOVWF	VARX_D		;Valor de las decenas que se van a enviar
     
     MOVF		VAR_U, W
-    MOVWF	VARX_U
+    MOVWF	VARX_U		;Valor de las unidades que se van a enviar 
 ;-------------------------------------Eje y-----------------------------------------------
     MOVF		VAR_Y, W
-    MOVWF	VAR_CDU
-    CALL		CONV_NO
-    
+    MOVWF	VAR_CDU		;Se mueve el valor del ADC a la variable general
+    CALL		CONV_NO		;Se llama a la funcion para pasar el valor de unidades, decenas y centenas
+  
     MOVF		VAR_C, W
-    MOVWF	VARY_C
+    MOVWF	VARY_C			;Valor de las centanas que se van a enviar 
     
     MOVF		VAR_D, W
-    MOVWF	VARY_D
+    MOVWF	VARY_D		;Valor de las decenas que se van a enviar
     
     MOVF		VAR_U, W
-    MOVWF	VARY_U
-FIN:    
-    CALL		TOGGLES  
-    GOTO		LOOP
-    ;delimitar los digitos, convertir valores de del 0 al 9 y sumar 48 para pasarlo a ASCII 
-    ;Una etiqueta que contenga la parte de envio  
+    MOVWF	VARY_U		;Valor de las unidades que se van a enviar
+SEND:
+    CALL		ENVIO_DATOS
+    
+    GOTO		LOOP 
     ;Configurar los datos recibidos en valor de los display, limitado por coma.
 ;-----------------------------------------Subrutinas-------------------------------------  
-DISPLAY				
-   CLRF		PORTA			    ;valores de las variables.
-    MOVF		FLAGS,W		    ;Dependiendo del actual valor de banderas
-    ADDWF	PCL,F			    ;se selecciona el diplays que va a mostrar su valor:
-   GOTO		DISPLAY_0		    ;Para los displays del eje x
-    GOTO		DISPLAY_1		    ;	    ||
-    GOTO		DISPLAY_2		    ;	    ||
-    ;GOTO		DISPLAY_3		    ;Para los displays del eje y
- ;  GOTO		DISPLAY_4		    ;	    ||
-    ;GOTO		DISPLAY_5		    ;	    ||
-DISPLAY_0:
-   MOVF		NIBB_H, W		
-   CALL		TABLA			
-   MOVWF	PORTD	
-   BTFSC		LED, VALOR_CERO
-   GOTO		$+3
-   BSF		PORTA,  0
-   GOTO		END_DIS
-   BSF		PORTA,  3	
-   GOTO		END_DIS
-DISPLAY_1:   
-   MOVF		NIBB_L, W		
-   CALL		TABLA			
-   MOVWF	PORTD
-  BTFSC		LED, VALOR_CERO
-   GOTO		$+3
-   BSF		PORTA,  1
-   GOTO		END_DIS
-   BSF		PORTA,  4	
-   GOTO		END_DIS
-DISPLAY_2:
-   MOVF		NIBB_H, W		
-   CALL		TABLA
-   MOVWF	PORTD
-   BTFSC    	LED, VALOR_CERO 
-   GOTO		$+3
-   BSF		PORTA,  2
-   GOTO		END_DIS
-   BSF		PORTA,  5	
-   GOTO		END_DIS
-;DISPLAY_3:   
- ;  MOVF		NIBB_L, W		
-  ; CALL		TABLA			
-  ; MOVWF	PORTD			
-   ;BSF		PORTA,  3		
-   ;GOTO		END_DIS
-;DISPLAY_4:
-  ; MOVF		NIBB_H, W		
- ;  CALL		TABLA			
-  ; MOVWF	PORTD			
-  ; BSF		PORTA,  4	
-  ; GOTO		END_DIS
-;DISPLAY_5:   
-  ; MOVF		NIBB_L, W		
-   ;CALL		TABLA
- ;  MOVLW	VALOR_CERO
- ;  MOVWF	PORTD			
-;   BSF		PORTA,  5		
-   ;GOTO		END_DIS
-END_DIS:
-  RETURN  
-  
-TOGGLES:				;Se incrementa el valor de banderas cada
-    INCF		FLAGS,F		;vez que que se llama a la funcion.
-    MOVLW	.3			;Debido a que hay 6 displays, se resetea
-    SUBWF	FLAGS,W		;la variable cada vez que esta tiene un valor
-    BTFSC	STATUS, Z		;de 6.
-    CLRF		FLAGS
-    RETURN
-    
 CONV_NO
-    CLRF		VAR_U	    
-   CLRF		VAR_D	   
-   CLRF		VAR_C
+    CLRF		VAR_U			;se obtienen los valores de las centenas, 
+   CLRF		VAR_D			;decenas y unidades independientemente
+   CLRF		VAR_C			;del eje con el que se trabaje.
 CENTENAS:
-   MOVLW	.100
-   SUBWF	VAR_CDU, W
-   BTFSS		STATUS, C
-   GOTO		DECENAS
-   INCF		VAR_C
-   MOVWF	VAR_CDU
+   MOVLW	.100			;Se le resta un valor, en este caso .100,
+   SUBWF	VAR_CDU, W		;luego se verifica si la variable es menor al 
+   BTFSS		STATUS, C		;valor sustraido, si es menor se procede a la
+   GOTO		DECENAS		;siguiente posición caso contrario se repite el
+   INCF		VAR_C			;procedimiento antes descrito hasta que la va- 
+   MOVWF	VAR_CDU		;riable tenga un valor menor al sustraido. 
    GOTO		CENTENAS
 DECENAS:
-   MOVLW	.10
-   SUBWF	VAR_CDU, W
+   MOVLW	.10			;El procedimiento descrito en Centenas, apli-
+   SUBWF	VAR_CDU, W		;ca para decenas. 
    BTFSS		STATUS, C
    GOTO		UNIDADES
    INCF		VAR_D
    MOVWF	VAR_CDU
    GOTO		DECENAS
 UNIDADES:
-   MOVLW	.1
-   SUBWF	VAR_CDU, W
+   MOVLW	.1			;El procedimiento descrito en Centenas, apli-
+   SUBWF	VAR_CDU, W		;ca para unidades. 
    BTFSS		STATUS, C
    RETURN
    INCF		VAR_U
    MOVWF	VAR_CDU
    GOTO		UNIDADES
-DELAY_4US				;DELAY DE  4us (supuestamente)
-    MOVLW   .25
-    MOVWF   CONT1
-    DECFSZ  CONT1, F	
-    GOTO    $-1 
-   RETURN    
- 
+   
+ENVIO_DATOS
+   BTFSS		PIR1,  TXIF		    ;Se revisa si esta ocupado
+   RETURN				    ;si lo esta regresa al loop.
+   MOVF		EJE_XY, W		    ;Sirve para saber
+   ADDWF	PCL,F			    ;que dato se debe de enviar:
+   GOTO		DATO_1			    ;Centenas de x
+   GOTO		DATO_2		    ;Decenas de x
+   GOTO		DATO_3		    ;unidades de x
+   GOTO		SEPARADOR		    
+   GOTO		DATO_4		    ;mismo orden de x, solo que 
+   GOTO		DATO_5		    ;esta ves para y
+   GOTO		DATO_6
+   GOTO		FIN_LINEA
+DATO_1:				    ;se mueve el valor actual y se le suma una 
+    MOVF		VARX_C, W		    ;literal de .48 para ajustarlo a su caracter ASCII
+    GOTO		AJUSTE		    ;este procedimiento se repite en todos los "DATO_N".
+DATO_2:
+    MOVF		VARX_D, W
+    GOTO		AJUSTE
+DATO_3:
+    MOVF		VARX_U, W
+    GOTO		AJUSTE
+SEPARADOR:
+    MOVLW	COMA			    ;Caracter especifico para separar las 
+    GOTO		ENVIO			    ;coordenadas.
+DATO_4:
+    MOVF		VARY_C, W
+    GOTO		AJUSTE
+DATO_5:
+    MOVF		VARY_D, W
+    GOTO		AJUSTE
+DATO_6:
+    MOVF		VARY_U, W
+    GOTO		AJUSTE
+FIN_LINEA:
+    MOVLW	NUEVA_LINEA		 ;Sirve para saber que las coordenadas
+    GOTO		ENVIO			 ;se han enviado completamente.
+AJUSTE:
+    ADDLW	CON_ASCII		;equivale a 48 base 10.
+ENVIO:
+    MOVWF	RCREG
+    INCF		EJE_XY, F
+    RETURN
     END
