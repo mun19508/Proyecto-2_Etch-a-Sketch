@@ -17,21 +17,37 @@
 ;-----------------------------------Constantes------------------------------------------- 
 VALOR_CERO	EQU	.0
 DISPLAYS_X	EQU	.1	
-;-------------------------------------Variables------------------------------------------	
+;*********************************Variables**************************************
 PR_VAR		UDATA
+;---------------------------------------Delays--------------------------------------------
 CONT1		    RES 1		    ;Variable para delays
 CONT2		    RES 1		    ;para delays
-DISPLAY_V	    RES 1
-DISP_L		    RES 1		    ;contiene los bits 0 - 99, eje x
-DISX_H	    RES 1		    ;contiene los valores de  0 - 9, eje x
-DISY_L		    RES 1		    ;contiene los bits 0 - 99, eje y
-DISY_H	    RES 1		    ;contiene los valores de  0 - 9, eje y
-NIBB_L		    RES 1		    ;utilizada para los nibbles menos significativos
-NIBB_H		    RES 1		    ;utilizada para el nibble mas significativo
-LED		    RES 1		    ;variable para selecionar el eje actual.
+;---------------------------------Para los ejes, enviar------------------------------------
+VAR_CDU	    RES 1		    ;contiene el valor conjunto de unidades, decenas y centenas
+VAR_U		    RES 1		    ;contiene las unidades
+VAR_D		    RES 1		    ;contiene las decenas
+VAR_C		    RES 1		    ;contiene las centenas		    
+VAR_X		    RES 1		    ;contiene el valor leido en el canal AN8
+VARX_U	    RES 1		    ;contiene las unidades del eje x
+VARX_D	    RES 1		    ;contiene las decenas del eje x
+VARX_C	    RES 1		    ;contiene las centenas del eje x
+VAR_Y		    RES 1		    ;contiene el valor leido en el canal AN9
+VARY_U	    RES 1		    ;contiene las unidades del eje y
+VARY_D	    RES 1		    ;contiene las decenas del eje y
+VARY_C		    RES 1		    ;contiene las centenas del eje y
+;-------------------------------Para mostrar los datos-----------------------------------
+DISY_L		    RES 1		    ;contiene el valor del display mas bajo, del eje y
+DISY_M	    RES 1		    ;contiene el valor del display el medio, del eje y
+DISY_H	    RES 1		    ;contiene el valor del display mas alto, del eje y
+DISX_L		    RES 1		    ;contiene el valor del display mas bajo, del eje x
+DISX_M	    RES 1		    ;contiene el valor del display el medio,  del eje x
+DISX_H	    RES 1		    ;contiene el valor del display mas alto, del eje x
+EJE_XY		    RES 1		    ;variable para selecionar el eje actual.
+FLAGS		    RES 1		    ;para el multiplexeo  
+;---------------------------------Interrupcion--------------------------------------------		    
 TEMP_STATUS	    RES 1		    ;para interrupcion
 TEMP_W	    RES 1		    ;para	    ||
-FLAGS		    RES 1		    ;para el multiplexeo  
+
 
 RES_VECT  CODE    0x0000            ; processor reset vector
     GOTO    START                   ; go to beginning of program
@@ -49,14 +65,30 @@ ISR:
     GOTO		RECEPCION
 ADC_C:
     ;Configurar este apartado para cambiar de canal: ADCON, 2 =1 -> AN9 & ADCON, 2 =1 -> AN8
+    BTFSC	ADCON, 2
+    GOTO		DATA_Y
     BCF		PIR1, ADIF
     MOVFW	ADRESH
-    MOVWF	DISPLAY_V
-    BSF		ADCON0, GO
-   GOTO		LOAD
+    MOVWF	VAR_X
+    BSF		ADCON, 2 
+   GOTO		INICIO_CON
+DATA_Y:
+    BCF		PIR1, ADIF
+    MOVFW	ADRESH
+    MOVWF	VAR_Y
+    BCF		ADCON, 2 
+    GOTO		INICIO_CON
 RECEPCION:
-    
+    MOVFW	RCREG			;Se mueve el valor recibido
+    MOVWF	DISPLAY_V		;a la variable de los displays
     GOTO		LOAD
+INICIO_CON:
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    BSF		ADCON0, GO
 LOAD:					;Se recupera el valor de:
     SWAPF	TEMP_STATUS, W
     MOVWF	STATUS		;STATUS
@@ -120,50 +152,62 @@ START
     CLRF		PORTB
     CLRF		PORTD
     ;----------------------------Se limpian las variables------------------------------------
-    CLRF		DISPLAY_V		
-    CLRF		NIBB_H
-    CLRF		NIBB_L    
     CLRF		FLAGS    
-EJE_X:
-    CLRF		LED
-    ;BCF		PIR1, ADIF		;Se apaga la bandera del A/D.
-    CALL		DELAY_4US
-    BSF		ADCON0, GO
-    BTFSC	ADCON0, GO
-    GOTO		$-1
-    MOVFW	ADRESH
-    MOVWF	DISPLAY_V
-    CALL		SEPARAR_NIBBLES
-    CALL		DISPLAY
-EJE_Y: 
-    BSF		LED, VALOR_CERO
-    MOVLW	B'01101001'		;Fosc/8, ANS10 & conversion activada.
-    MOVWF	ADCON0
-    BCF		PIR1, ADIF		;Se apaga la bandera del A/D.
-    CALL		DELAY_4US
-    BSF		ADCON0, GO
-   BTFSC		ADCON0, GO
-    GOTO		$-1
-    MOVFW	ADRESH
-    MOVWF	DISPLAY_V
-    CALL		SEPARAR_NIBBLES
-    CALL		DISPLAY
+    CLRF		CONT1		    
+    CLRF		CONT2		    
+    CLRF		VAR_CDU	   
+    CLRF		VAR_U		   
+    CLRF		VAR_D		    
+    CLRF		VAR_C		    
+    CLRF		VAR_X		    
+    CLRF		VARX_U	    
+    CLRF		VARX_D	    
+    CLRF		VARX_C	  
+    CLRF		VAR_Y		   
+    CLRF		VARY_U	   
+    CLRF		VARY_D	   
+    CLRF		VARY_C		  
+    CLRF		DISY_L		   
+    CLRF		DISY_M	    
+    CLRF		DISY_H	    
+    CLRF		DISX_L		   
+    CLRF		DISX_M	  
+    CLRF		DISX_H	  
+    CLRF		EJE_XY		   	    
+LOOP:
+;-------------------------------------Eje x-----------------------------------------------
+    MOVF		VAR_X, W
+    MOVWF	VAR_CDU
+    CALL		CONV_NO
+    
+    MOVF		VAR_C, W
+    MOVWF	VARX_C
+    
+    MOVF		VAR_D, W
+    MOVWF	VARX_D
+    
+    MOVF		VAR_U, W
+    MOVWF	VARX_U
+;-------------------------------------Eje y-----------------------------------------------
+    MOVF		VAR_Y, W
+    MOVWF	VAR_CDU
+    CALL		CONV_NO
+    
+    MOVF		VAR_C, W
+    MOVWF	VARY_C
+    
+    MOVF		VAR_D, W
+    MOVWF	VARY_D
+    
+    MOVF		VAR_U, W
+    MOVWF	VARY_U
 FIN:    
     CALL		TOGGLES  
-    GOTO		EJE_X
-    ;configurar una especie de menu donde se use algun bit para mantener la seleccion del eje 
-    ; los nibbles son los que tienen que ser especificos. restringir el aumento y la disminucion 
-    ;del tercer display.
-;-----------------------------------------Subrutinas--------------------------------------    
-SEPARAR_NIBBLES
-    MOVF		DISPLAY_V, W		
-    ANDLW	B'00001111'		
-    MOVWF	 NIBB_L		
-    SWAPF	DISPLAY_V, W		
-    ANDLW	B'00001111'		
-    MOVWF	NIBB_H		
-    RETURN
-    
+    GOTO		LOOP
+    ;delimitar los digitos, convertir valores de del 0 al 9 y sumar 48 para pasarlo a ASCII 
+    ;Una etiqueta que contenga la parte de envio  
+    ;Configurar los datos recibidos en valor de los display, limitado por coma.
+;-----------------------------------------Subrutinas-------------------------------------  
 DISPLAY				
    CLRF		PORTA			    ;valores de las variables.
     MOVF		FLAGS,W		    ;Dependiendo del actual valor de banderas
@@ -233,7 +277,35 @@ TOGGLES:				;Se incrementa el valor de banderas cada
     BTFSC	STATUS, Z		;de 6.
     CLRF		FLAGS
     RETURN
- 
+    
+CONV_NO
+    CLRF		VAR_U	    
+   CLRF		VAR_D	   
+   CLRF		VAR_C
+CENTENAS:
+   MOVLW	.100
+   SUBWF	VAR_CDU, W
+   BTFSS		STATUS, C
+   GOTO		DECENAS
+   INCF		VAR_C
+   MOVWF	VAR_CDU
+   GOTO		CENTENAS
+DECENAS:
+   MOVLW	.10
+   SUBWF	VAR_CDU, W
+   BTFSS		STATUS, C
+   GOTO		UNIDADES
+   INCF		VAR_D
+   MOVWF	VAR_CDU
+   GOTO		DECENAS
+UNIDADES:
+   MOVLW	.1
+   SUBWF	VAR_CDU, W
+   BTFSS		STATUS, C
+   RETURN
+   INCF		VAR_U
+   MOVWF	VAR_CDU
+   GOTO		UNIDADES
 DELAY_4US				;DELAY DE  4us (supuestamente)
     MOVLW   .25
     MOVWF   CONT1
