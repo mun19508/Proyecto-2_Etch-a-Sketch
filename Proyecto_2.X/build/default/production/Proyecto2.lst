@@ -1,14 +1,14 @@
-MPASM 5.77                     PROYECTO2.ASM   10-25-2020  3:10:08         PAGE  1
+MPASM 5.77                     PROYECTO2.ASM   10-27-2020  10:30:14         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
                       00001 ;********************************************************************************
-                      00002  ;Daniel Mundo 
+                      00002 ;Daniel Mundo
                       00003 ;19508
                       00004 ;UVG
-                      00005 ; Proyecto 2: Etch a Sketch
+                      00005 ;Proyecto 2: Etch a Sketch
                       00006 ;********************************************************************************
                       00007 ; Assembly source line config statements
                       00008 
@@ -31,402 +31,482 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00014 ; CONFIG2
                       00015 ; __config 0xFFFF
 2008   3FFF           00016  __CONFIG _CONFIG2, _BOR4V_BOR40V & _WRT_OFF
-                      00017 ;-----------------------------------Constantes------------------------------------------- 
-  00000000            00018 VALOR_CERO      EQU     .0
-  00000001            00019 DISPLAYS_X      EQU     .1      
-  0000002C            00020 COMA            EQU     .44
-  00000030            00021 CON_ASCII       EQU     .48
-  00000081            00022 CONFG_TMR0      EQU     .129
-  00000006            00023 CONT_TMR0       EQU     .6
-  0000000A            00024 NUEVA_LINEA     EQU     .10
-                      00025 ;*********************************Variables**************************************
-                      00026 PR_VAR          UDATA
-                      00027 ;---------------------------------------Delays--------------------------------------------
-0000                  00028 CONT1               RES 1                   ;Variable para delays
-0001                  00029 CONT2               RES 1                   ;para delays
-                      00030 ;---------------------------------Para los ejes, enviar------------------------------------
-0002                  00031 VAR_CDU     RES 1                   ;contiene el valor conjunto de unidades, decenas y centenas
-0003                  00032 VAR_U               RES 1                   ;contiene las unidades
-0004                  00033 VAR_D               RES 1                   ;contiene las decenas
-0005                  00034 VAR_C               RES 1                   ;contiene las centenas                  
-0006                  00035 VAR_X               RES 1                   ;contiene el valor leido en el canal AN8
-0007                  00036 VARX_U      RES 1                   ;contiene las unidades del eje x
-0008                  00037 VARX_D      RES 1                   ;contiene las decenas del eje x
-0009                  00038 VARX_C      RES 1                   ;contiene las centenas del eje x
-000A                  00039 VAR_Y               RES 1                   ;contiene el valor leido en el canal AN9
-000B                  00040 VARY_U      RES 1                   ;contiene las unidades del eje y
-000C                  00041 VARY_D      RES 1                   ;contiene las decenas del eje y
-000D                  00042 VARY_C              RES 1                   ;contiene las centenas del eje y
-MPASM 5.77                     PROYECTO2.ASM   10-25-2020  3:10:08         PAGE  2
+                      00017 ;-----------------------------------Constantes-------------------------------------------
+  00000000            00018 VALOR_CERO         EQU  .0
+  00000001            00019 DISPLAYS_X         EQU  .1
+  0000002C            00020 COMA               EQU  .44
+  00000030            00021 CON_ASCII          EQU  .48
+  00000081            00022 CONFG_TMR0         EQU  .129
+  00000006            00023 CONT_TMR0          EQU  .6
+  0000000A            00024 NUEVA_LINEA        EQU  .10
+  0000003B            00025 PUNTO_COMA         EQU  .59
+                      00026 ;*********************************Variables**************************************
+                      00027 PR_VAR          UDATA
+                      00028 ;-----------------------------------------------------------------------------------------
+                      00029 ;---------------------------------Para los ejes, enviar------------------------------------
+0000                  00030 VAR_CDU     RES 1                   ;contiene el valor conjunto de unidades, decenas y centenas
+0001                  00031 VAR_U               RES 1                   ;contiene las unidades
+0002                  00032 VAR_D               RES 1                   ;contiene las decenas
+0003                  00033 VAR_C               RES 1                   ;contiene las centenas
+0004                  00034 VAR_X               RES 1                   ;contiene el valor leido en el canal AN8
+0005                  00035 VARX_U      RES 1                   ;contiene las unidades del eje x
+0006                  00036 VARX_D      RES 1                   ;contiene las decenas del eje x
+0007                  00037 VARX_C      RES 1                   ;contiene las centenas del eje x
+0008                  00038 VAR_Y               RES 1                   ;contiene el valor leido en el canal AN9
+0009                  00039 VARY_U      RES 1                  ;contiene las unidades del eje y
+000A                  00040 VARY_D      RES 1                   ;contiene las decenas del eje y
+000B                  00041 VARY_C              RES 1                   ;contiene las centenas del eje y
+000C                  00042 VAR_XY      RES 1                   ;variable para selecionar el eje actual.                
+MPASM 5.77                     PROYECTO2.ASM   10-27-2020  10:30:14         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
                       00043 ;-------------------------------Para mostrar los datos-----------------------------------
-000E                  00044 DISY_L              RES 1                   ;contiene el valor del display mas bajo, del eje y
-000F                  00045 DISY_M      RES 1                   ;contiene el valor del display el medio, del eje y
-0010                  00046 DISY_H      RES 1                   ;contiene el valor del display mas alto, del eje y
-0011                  00047 DISX_L              RES 1                   ;contiene el valor del display mas bajo, del eje x
-0012                  00048 DISX_M      RES 1                   ;contiene el valor del display el medio,  del eje x
-0013                  00049 DISX_H      RES 1                   ;contiene el valor del display mas alto, del eje x
-0014                  00050 EJE_XY              RES 1                   ;variable para selecionar el eje actual.
-0015                  00051 FLAGS               RES 1                   ;para el multiplexeo  
-                      00052 ;---------------------------------Interrupcion--------------------------------------------              
-                                
-0016                  00053 TEMP_STATUS         RES 1                   ;para interrupcion
-0017                  00054 TEMP_W      RES 1                   ;para           ||
-                      00055 
-                      00056 
-                      00057 RES_VECT  CODE    0x0000            ; processor reset vector
-0000   2???           00058     GOTO    START                   ; go to beginning of program
-                      00059     
-                      00060 ;************************************Interrupcion********************************
-                      00061 ISR_VECT   CODE    0X0004
-0004                  00062 SAVE:                                   ;Sirve para guardar el valor actual de:
-0004   00??           00063     MOVWF       TEMP_W          ;"W"
-0005   0E03           00064     SWAPF       STATUS, W
-0006   00??           00065     MOVWF       TEMP_STATUS             ;& STATUS
-0007                  00066 ISR:
-0007   1D0B           00067     BTFSS       INTCON, T0IF            ;Interrupcion del TRM0
-0008   2???           00068     GOTO                MUX
-0009   1F0C           00069     BTFSS       PIR1, ADIF              ;Interrupcion del ADC
-000A   2???           00070     GOTO                ADC_C
-000B   1E8C           00071     BTFSS       PIR1, RCIF              ;Interrupcion de la recepcion
-000C   2???           00072     GOTO                RECEPCION
-000D                  00073 MUX:
-000D   3006           00074     MOVLW       CONT_TMR0
-000E   0081           00075     MOVWF       TMR0
-000F   2???           00076     CALL                DISPLAY
-0010   0A??           00077     INCF                FLAGS, F
-0011   2???           00078     GOTO                LOAD
-0012                  00079 ADC_C:          ;Configurar este apartado para cambiar de canal: ADCON, 2 =1 -> AN9 & ADCON, 2 =1 -> AN8
-                                
-0012   191F           00080     BTFSC       ADCON0, 2
-0013   2???           00081     GOTO                DATA_Y
-0014   130C           00082     BCF         PIR1, ADIF
-0015   081E           00083     MOVFW       ADRESH
-0016   00??           00084     MOVWF       VAR_X
-0017   151F           00085     BSF         ADCON0, 2 
-0018   2???           00086    GOTO         INICIO_CON
-0019                  00087 DATA_Y:
-0019   130C           00088     BCF         PIR1, ADIF
-001A   081E           00089     MOVFW       ADRESH
-001B   00??           00090     MOVWF       VAR_Y
-001C   111F           00091     BCF         ADCON0, 2 
-001D   2???           00092     GOTO                INICIO_CON
-001E                  00093 RECEPCION:
-MPASM 5.77                     PROYECTO2.ASM   10-25-2020  3:10:08         PAGE  3
+000D                  00044 DISY_L              RES 1                   ;contiene el valor del display mas bajo, del eje y
+000E                  00045 DISY_M      RES 1                   ;contiene el valor del display el medio, del eje y
+000F                  00046 DISY_H      RES 1                   ;contiene el valor del display mas alto, del eje y
+0010                  00047 DISX_L              RES 1                   ;contiene el valor del display mas bajo, del eje x
+0011                  00048 DISX_M      RES 1                   ;contiene el valor del display el medio,  del eje x
+0012                  00049 DISX_H      RES 1                   ;contiene el valor del display mas alto, del eje x
+0013                  00050 DIS_CDU     RES 1
+0014                  00051 DIS_XY              RES 1                   ;variable para selecionar el eje actual.
+0015                  00052 FLAGS               RES 1                   ;para el multiplexeo
+                      00053 ;---------------------------------Interrupcion--------------------------------------------
+0016                  00054 TEMP_STATUS         RES 1                   ;para interrupcion
+0017                  00055 TEMP_W      RES 1                   ;para           ||
+                      00056 ;------------------------------- recepcion ------------------------------------------------
+0018                  00057 DATA_1             RES 1                    ;para la recepcion de datos de centenas
+0019                  00058 DATA_2     RES 1                    ;para la recepcion de datos de decenas
+001A                  00059 DATA_3     RES 1                    ;para la recepcion de datos de unidades
+001B                  00060 DATA_REC           RES 1                    ;variable que guarda el valor recibido
+001C                  00061 CONT_DATA          RES 1                    ;lleva la cuenta actual del valor recibido
+                      00062 
+                      00063 RES_VECT  CODE    0x0000            ;processor reset vector
+0000   2???           00064     GOTO    START                   ; go to beginning of program
+                      00065 
+                      00066 ;*******************************Interrupcion**************************************
+                      00067 ISR_VECT   CODE    0X0004
+0004                  00068 SAVE:                                   ;Sirve para guardar el valor actual de:
+0004   00??           00069     MOVWF       TEMP_W          ;"W"
+0005   0E03           00070     SWAPF       STATUS, W
+0006   00??           00071     MOVWF       TEMP_STATUS             ;& STATUS
+0007                  00072 ISR:
+0007   190B           00073     BTFSC       INTCON, T0IF            ;Interrupcion del TRM0
+0008   2???           00074     GOTO                MUX
+0009   1B0C           00075     BTFSC       PIR1, ADIF              ;Interrupcion del ADC
+000A   2???           00076     GOTO                ADC_C
+000B   1A8C           00077     BTFSC       PIR1, RCIF              ;Interrupcion de la recepcion
+000C   2???           00078     GOTO                RECEPCION
+000D   2???           00079     GOTO                LOAD
+000E                  00080 MUX:
+000E   110B           00081     BCF         INTCON, T0IF
+000F   3006           00082     MOVLW       CONT_TMR0
+0010   0081           00083     MOVWF       TMR0                    ;se reinicia el valor del TRM0
+0011   2???           00084     CALL                DISPLAY         ;se llama a la funcion de mostrar datos
+0012   0A??           00085     INCF                FLAGS, F                ;se incrementa el valor para el mux
+0013   2???           00086     GOTO                LOAD
+                      00087 
+0014                  00088 RECEPCION:
+0014   081A           00089     MOVFW       RCREG
+0015   00??           00090     MOVWF       DATA_REC
+0016   3C2C           00091     SUBLW       COMA                    ;si esto da cero es que se enviaba anteriormente x
+0017   1D03           00092     BTFSS       STATUS,Z                ;si da cero se ejecuta
+0018   2???           00093     GOTO                MIRAR_SALTO
+                      00094     
+0019   08??           00095     MOVFW       DATA_1                  ;se guarda el valor de data 'n' 
+MPASM 5.77                     PROYECTO2.ASM   10-27-2020  10:30:14         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-001E   081A           00094     MOVFW       RCREG                   ;Se mueve el valor recibido
-001F   00??           00095     MOVWF       VAR_CDU         ;a la variable de los displays
-0020   2???           00096     GOTO                LOAD
-0021                  00097 INICIO_CON:
-0021   0000           00098     NOP
-0022   0000           00099     NOP
-0023   0000           00100     NOP
-0024   0000           00101     NOP
-0025   0000           00102     NOP
-0026   149F           00103     BSF         ADCON0, GO
-0027                  00104 LOAD:                                   ;Se recupera el valor de:
-0027   0E??           00105     SWAPF       TEMP_STATUS, W
-0028   0083           00106     MOVWF       STATUS          ;STATUS
-0029   0E??           00107     SWAPF       TEMP_W, F
-002A   0E??           00108     SWAPF       TEMP_W, W               ;& de "W"
-002B   178B           00109     BSF         INTCON, GIE             ;se habilitan la interrupciones globales
-002C   0009           00110     RETFIE
-                      00111 ;-------------------------------------Tabla----------------------------------------------
-002D                  00112 TABLA
-002D   0782           00113     ADDWF       PCL , F
-                      00114                 ;    PCDEGFAB
-002E   3477           00115     RETLW       B'01110111'   ; 0 EN EL DISPLAY
-002F   3441           00116     RETLW       B'01000001' ; 1
-0030   343B           00117     RETLW       B'00111011' ; 2
-0031   346B           00118     RETLW       B'01101011' ; 3
-0032   344D           00119     RETLW       B'01001101' ; 4
-0033   346E           00120     RETLW       B'01101110' ; 5
-0034   347E           00121     RETLW       B'01111110' ; 6
-0035   3443           00122     RETLW       B'01000011' ; 7
-0036   347F           00123     RETLW       B'01111111' ; 8
-0037   346F           00124     RETLW       B'01101111' ; 9
-0038   0008           00125  RETURN
-                      00126  
-0039                  00127 DISPLAY                         
-0039   0185           00128     CLRF                PORTA                       ;valores de las variables.
-003A   08??           00129     MOVF                FLAGS,W             ;Dependiendo del actual valor de banderas
-003B   0782           00130     ADDWF       PCL,F                       ;se selecciona el diplays que va a mostrar su valor:
-003C   2???           00131     GOTO                DISPLAY_0                   ;Para los displays del eje x
-003D   2???           00132     GOTO                DISPLAY_1                   ;       ||
-003E   2???           00133     GOTO                DISPLAY_2                   ;       ||
-003F   2???           00134     GOTO                DISPLAY_3                   ;Para los displays del eje y
-0040   2???           00135     GOTO                DISPLAY_4                   ;       ||
-0041   2???           00136     GOTO                DISPLAY_5                   ;       ||
-0042   01??           00137     CLRF                FLAGS
-0043                  00138 DISPLAY_0:                                      ;Unidades de 'x'.
-0043   08??           00139    MOVF         DISX_L, W               
-0044   2???           00140    CALL         TABLA                   
-0045   0088           00141    MOVWF        PORTD   
-0046   1405           00142    BSF          PORTA,  0
-0047   0008           00143    RETURN
-0048                  00144 DISPLAY_1:                                      ;Decenas de 'x'.
-0048   08??           00145    MOVF         DISX_M, W               
-0049   2???           00146    CALL         TABLA                   
-MPASM 5.77                     PROYECTO2.ASM   10-25-2020  3:10:08         PAGE  4
+001A   00??           00096     MOVWF       DISX_H          ;en la variable del display 'n'.
+001B   08??           00097     MOVFW       DATA_2          ;el orden es 1=centena, 2=decena & 3=unidad
+001C   00??           00098     MOVWF       DISX_M              
+001D   08??           00099     MOVFW       DATA_3
+001E   00??           00100     MOVWF       DISX_L
+001F   01??           00101     CLRF                CONT_DATA               
+0020   2???           00102     GOTO                LOAD
+                      00103     
+0021                  00104 MIRAR_SALTO
+0021   3000           00105     MOVLW       .0                      ;si es cero se mueve el valor actual de los 
+0022   02??           00106     SUBWF       DATA_REC,W              ;datos 'n' a las variables de los displays de y
+0023   1D03           00107     BTFSS        STATUS, Z 
+0024   2???           00108     GOTO                GUARDAR
+                      00109     
+0025   08??           00110     MOVFW       DATA_1                  ;misma logica aplica que los datos de x
+0026   00??           00111     MOVWF       DISY_H
+0027   08??           00112     MOVFW       DATA_2
+0028   00??           00113     MOVWF       DISY_M
+0029   08??           00114     MOVFW       DATA_3
+002A   00??           00115     MOVWF       DISY_L
+002B   01??           00116     CLRF                CONT_DATA
+002C   2???           00117     GOTO                LOAD
+                      00118     
+002D                  00119 GUARDAR
+002D   08??           00120     MOVFW       CONT_DATA               ;dependiendo del valor actual, se decide el dato
+002E   0782           00121     ADDWF        PCL,F                  ;a guardar.
+002F   2???           00122     GOTO                RECIVIDO_1
+0030   2???           00123     GOTO                RECIVIDO_2
+0031   2???           00124     GOTO                RECIVIDO_3
+0032   01??           00125     CLRF                CONT_DATA
+0033                  00126 RECIVIDO_1:
+0033   3030           00127     MOVLW       CON_ASCII               ;se resta un valor de 48 para regresar de  
+0034   02??           00128     SUBWF       DATA_REC,W              ;caracter a numero binario.
+0035   00??           00129     MOVWF       DATA_1
+0036   0A??           00130     INCF                CONT_DATA,F             ;se aumenta el valor para guardar el sig dato
+0037   2???           00131     GOTO                 LOAD
+0038                  00132 RECIVIDO_2:
+0038   3030           00133     MOVLW       CON_ASCII               ;misma logica que Recivido_1
+0039   02??           00134     SUBWF       DATA_REC,W
+003A   00??           00135     MOVWF        DATA_2
+003B   0A??           00136     INCF                CONT_DATA,F
+003C   2???           00137     GOTO                 LOAD
+003D                  00138 RECIVIDO_3:
+003D   3030           00139     MOVLW        CON_ASCII              ;misma logica que Recivido_1
+003E   02??           00140     SUBWF       DATA_REC,W
+003F   00??           00141     MOVWF       DATA_3
+0040   0A??           00142     INCF                CONT_DATA,F
+0041   2???           00143     GOTO        LOAD
+0042                  00144 ADC_C:          ;Configurar este apartado para cambiar de canal: ADCON, 2 =1 -> AN11 & ADCON, 2 =0 -> AN
+                            10
+0042   191F           00145     BTFSC       ADCON0, 2               ;se verifica en que canal se ecuentra actualmente
+0043   2???           00146     GOTO                DATA_X
+0044   130C           00147     BCF         PIR1, ADIF
+MPASM 5.77                     PROYECTO2.ASM   10-27-2020  10:30:14         PAGE  4
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-004A   0088           00147    MOVWF        PORTD
-004B   1485           00148    BSF          PORTA,  1
-004C   0008           00149    RETURN
-004D                  00150 DISPLAY_2:                                      ;Centenas de 'x'.
-004D   08??           00151    MOVF         DISX_H, W
-004E   2???           00152    CALL         TABLA
-004F   0088           00153    MOVWF        PORTD
-0050   1505           00154    BSF          PORTA,  2
-0051   0008           00155    RETURN
-0052                  00156 DISPLAY_3:                                      ;Unidades de 'y'
-0052   08??           00157     MOVF                DISY_L, W
-0053   2???           00158     CALL                TABLA                   
-0054   0088           00159    MOVWF        PORTD                   
-0055   1585           00160    BSF          PORTA,  3               
-0056   0008           00161    RETURN
-0057                  00162 DISPLAY_4:                                      ;Decenas de 'y'.
-0057   08??           00163     MOVF                DISY_M, W               
-0058   2???           00164    CALL         TABLA                   
-0059   0088           00165    MOVWF        PORTD                   
-005A   1605           00166    BSF          PORTA,  4       
-005B   0008           00167    RETURN
-005C                  00168 DISPLAY_5:                                      ;Centenas de 'y'.
-005C   08??           00169     MOVF                DISY_H, W
-005D   2???           00170     CALL                TABLA
-005E   0088           00171    MOVWF        PORTD                   
-005F   1685           00172    BSF          PORTA,  5               
-0060   0008           00173     RETURN  
-                      00174     
-                      00175 MAIN_PROG       CODE                      ; let linker place main program
-                      00176  
-0000                  00177 START
-0000   1703           00178     BSF          STATUS, 6
-0001   1683           00179     BSF         STATUS, 5               ;--------------------Banco 3----------------
-Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0002   0188           00180     CLRF                ANSEL
-Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0003   0189           00181     CLRF                ANSELH
-Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0004   1409           00182     BSF         ANSELH,  ANS8           ;Se habilita el analogico en B1
-Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0005   1509           00183     BSF         ANSELH, ANS10           ;Se habilita el analogico en B2
-0006   1303           00184     BCF         STATUS, 6               ;-------------------Banco 1------------------
-0007   3006           00185     MOVLW       B'00000110'
-Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0008   0086           00186     MOVWF       TRISB                   ;Solo B1 & B2 como entrada.
-Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0009   0185           00187     CLRF                TRISA                   ;Seleccion de displays.
-Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-000A   0188           00188     CLRF                TRISD                   ;Displays. 
-                      00189     ;------------------------Configuracion de ADC-----------------------------------------
-Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-000B   139F           00190     BCF         ADCON1, ADFM            ;Justificado a la izquierda.
-Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-MPASM 5.77                     PROYECTO2.ASM   10-25-2020  3:10:08         PAGE  5
+0045   081E           00148     MOVFW       ADRESH
+0046   00??           00149     MOVWF       VAR_Y
+0047   151F           00150     BSF         ADCON0, 2               ;se pasa al Canal 11
+0048   2???           00151    GOTO         INICIO_CON
+0049                  00152 DATA_X:
+0049   130C           00153     BCF         PIR1, ADIF
+004A   081E           00154     MOVFW       ADRESH
+004B   00??           00155     MOVWF       VAR_X
+004C   111F           00156     BCF         ADCON0, 2               ;se pasa al Canal 10
+004D   2???           00157     GOTO                INICIO_CON
+004E                  00158 INICIO_CON:
+004E   0000           00159     NOP
+004F   0000           00160     NOP
+0050   0000           00161     NOP
+0051   0000           00162     NOP
+0052   0000           00163     NOP
+0053   149F           00164     BSF         ADCON0, GO              ;se inicia la conversion
+0054                  00165 LOAD:                                   ;Se recupera el valor de:
+0054   0E??           00166     SWAPF       TEMP_STATUS, W
+0055   0083           00167     MOVWF       STATUS          ;STATUS
+0056   0E??           00168     SWAPF       TEMP_W, F
+0057   0E??           00169     SWAPF       TEMP_W, W               ;& de "W"
+0058   178B           00170     BSF         INTCON, GIE             ;se habilitan la interrupciones globales
+0059   0009           00171     RETFIE
+                      00172 ;-------------------------------------Tabla----------------------------------------------
+005A                  00173 TABLA
+005A   390F           00174     ANDLW       B'00001111'              ;se asegura que sea solo hasta 15
+005B   0782           00175     ADDWF       PCL,F                    
+                      00176                 ;  PCDEGFAB
+005C   3477           00177     RETLW       B'01110111'              ;0 EN EL DISPLAY
+005D   3441           00178     RETLW       B'01000001'              ;1
+005E   343B           00179     RETLW       B'00111011'              ;2
+005F   346B           00180     RETLW       B'01101011'              ;3 
+0060   344D           00181     RETLW       B'01001101'              ;4
+0061   346E           00182     RETLW       B'01101110'              ;5
+0062   347E           00183     RETLW       B'01111110'              ;6 
+0063   3443           00184     RETLW       B'01000011'              ;7
+0064   347F           00185     RETLW       B'01111111'             ;8
+0065   346F           00186     RETLW       B'01101111'             ;9
+0066   3400           00187     RETLW       B'00000000'             ;ERROR
+0067   3400           00188     RETLW       B'00000000'             ;ERROR
+0068   3400           00189     RETLW       B'00000000'             ;ERROR
+0069   3400           00190     RETLW       B'00000000'             ;ERROR
+006A   3400           00191     RETLW       B'00000000'             ;ERROR
+006B   3400           00192     RETLW       B'00000000'             ;ERROR
+                      00193     
+006C                  00194 DISPLAY
+006C   0185           00195     CLRF                PORTA                   ;valores de las variables.
+006D   08??           00196     MOVF                FLAGS,W         ;Dependiendo del actual valor de banderas
+006E   0782           00197     ADDWF       PCL,F                   ;se selecciona el diplays que va a mostrar su valor:
+006F   2???           00198     GOTO                DISPLAY_0               ;Para los displays del eje x
+0070   2???           00199     GOTO                DISPLAY_1               ;           ||
+0071   2???           00200     GOTO                DISPLAY_2               ;           ||
+MPASM 5.77                     PROYECTO2.ASM   10-27-2020  10:30:14         PAGE  5
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-000C   129F           00191     BCF         ADCON1, VCFG1           ;Ref: VSS.
+0072   2???           00201     GOTO                DISPLAY_3               ;Para los displays del eje y
+0073   2???           00202     GOTO                DISPLAY_4               ;           ||
+0074   2???           00203     GOTO                DISPLAY_5               ;           ||
+0075   01??           00204     CLRF                FLAGS
+0076                  00205 DISPLAY_0:                              ;Unidades de 'x'.
+0076   08??           00206    MOVF         DISX_L, W
+0077   2???           00207    CALL         TABLA
+0078   0088           00208    MOVWF        PORTD
+0079   1405           00209    BSF          PORTA,  0
+007A   0008           00210    RETURN
+007B                  00211 DISPLAY_1:                              ;Decenas de 'x'.
+007B   08??           00212    MOVF         DISX_M, W
+007C   2???           00213    CALL         TABLA
+007D   0088           00214    MOVWF        PORTD
+007E   1485           00215    BSF          PORTA,  1
+007F   0008           00216    RETURN
+0080                  00217 DISPLAY_2:                              ;Centenas de 'x'.
+0080   08??           00218    MOVF         DISX_H, W
+0081   2???           00219    CALL         TABLA
+0082   0088           00220    MOVWF        PORTD
+0083   1505           00221    BSF          PORTA,  2
+0084   0008           00222    RETURN
+0085                  00223 DISPLAY_3:                              ;Unidades de 'y'
+0085   08??           00224     MOVF                DISY_L, W
+0086   2???           00225     CALL                TABLA
+0087   0088           00226    MOVWF        PORTD
+0088   1585           00227    BSF          PORTA,  3
+0089   0008           00228    RETURN
+008A                  00229 DISPLAY_4:                              ;Decenas de 'y'.
+008A   08??           00230     MOVF                DISY_M, W
+008B   2???           00231    CALL         TABLA
+008C   0088           00232    MOVWF        PORTD
+008D   1605           00233    BSF          PORTA,  4
+008E   0008           00234    RETURN
+008F                  00235 DISPLAY_5:                              ;Centenas de 'y'.
+008F   08??           00236     MOVF                DISY_H, W
+0090   2???           00237     CALL                TABLA
+0091   0088           00238    MOVWF        PORTD
+0092   1685           00239    BSF          PORTA,  5
+0093   0008           00240     RETURN
+                      00241 
+                      00242 MAIN_PROG       CODE                    ; let linker place main program
+                      00243 
+0000                  00244 START
+0000   1703           00245     BSF          STATUS, 6
+0001   1683           00246     BSF         STATUS, 5               ;--------------------Banco 3----------------
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-000D   121F           00192     BCF         ADCON1, VCFG0           ;Ref: VDD.
-                      00193      ;-----------------Configuracion de Recepcion/transmision-----------------------------
+0002   0188           00247     CLRF                ANSEL
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-000E   0099           00194     MOVWF       SPBRG                   ;Baud Rate 9615.
+0003   0189           00248     CLRF                ANSELH
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-000F   1518           00195     BSF         TXSTA, 2                ;Modo de alta velocidad. 
+0004   1509           00249     BSF         ANSELH,  ANS10  ;Se habilita el analogico en B1
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0010   1218           00196     BCF         TXSTA, 4                ;Modo Asincronico. 
-Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0011   1698           00197     BSF         TXSTA,  5               ;Bit de transmicion activo. 
-Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0012   1318           00198     BCF         TXSTA,  6               ;Transmicion de 8 bits. 
-                      00199     ;-------------------Configuracion de Interrupcion--------------------------------------
-0013   3081           00200    MOVLW        CONFG_TMR0
-Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0014   0081           00201    MOVWF        OPTION_REG 
-0015   178B           00202     BSF         INTCON, GIE             ;Se habilitaron la interrupciones globales,
-0016   170B           00203     BSF         INTCON, PEIE            ;perifericas,
-0017   168B           00204     BSF         INTCON, T0IE            ;del TRM0.
-Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0018   170C           00205     BSF         PIE1, ADIE              ;y la interrupciones por el A/D.
-0019   3061           00206     MOVLW       B'01100001'             ;Fosc/8, ANS8 & conversion activada.
-001A   009F           00207     MOVWF       ADCON0
-001B   1283           00208     BCF         STATUS, 5               ;-------------------Banco 0------------------
-                      00209   ;-----------------Configuracion de Recepcion/transmision-------------------------------
-001C   1798           00210     BSF         RCSTA, SPEN             ;Habilitar puerto serial. 
-001D   1618           00211     BSF         RCSTA, CREN             ;Habilitar recepcion continua.  
-001E   1318           00212     BCF         RCSTA, RX9              ;Recepcion de 8 bits.   
-                      00213    ;----------------------------Se limpian los puertos-------------------------------------
-001F   0185           00214     CLRF                PORTA                   
-0020   0186           00215     CLRF                PORTB
-0021   0188           00216     CLRF                PORTD
-                      00217     ;----------------------------Se limpian las variables------------------------------------
-0022   01??           00218     CLRF                FLAGS    
-0023   01??           00219     CLRF                CONT1               
-0024   01??           00220     CLRF                CONT2               
-0025   01??           00221     CLRF                VAR_CDU    
-0026   01??           00222     CLRF                VAR_U              
-0027   01??           00223     CLRF                VAR_D               
-0028   01??           00224     CLRF                VAR_C               
-0029   01??           00225     CLRF                VAR_X               
-002A   01??           00226     CLRF                VARX_U      
-002B   01??           00227     CLRF                VARX_D      
-002C   01??           00228     CLRF                VARX_C    
-002D   01??           00229     CLRF                VAR_Y              
-002E   01??           00230     CLRF                VARY_U     
-002F   01??           00231     CLRF                VARY_D     
-0030   01??           00232     CLRF                VARY_C            
-0031   01??           00233     CLRF                DISY_L             
-0032   01??           00234     CLRF                DISY_M      
-0033   01??           00235     CLRF                DISY_H      
-MPASM 5.77                     PROYECTO2.ASM   10-25-2020  3:10:08         PAGE  6
+MPASM 5.77                     PROYECTO2.ASM   10-27-2020  10:30:14         PAGE  6
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0034   01??           00236     CLRF                DISX_L             
-0035   01??           00237     CLRF                DISX_M    
-0036   01??           00238     CLRF                DISX_H    
-0037   01??           00239     CLRF                EJE_XY                      
-0038                  00240 LOOP:
-                      00241 ;-------------------------------------Eje x-----------------------------------------------
-0038   08??           00242     MOVF                VAR_X, W
-0039   00??           00243     MOVWF       VAR_CDU         ;Se mueve el valor del ADC a la variable general
-003A   2???           00244     CALL                CONV_NO         ;Se llama a la funcion para pasar el valor de unidades, decenas 
+0005   1589           00250     BSF         ANSELH, ANS11           ;Se habilita el analogico en B4
+0006   1303           00251     BCF         STATUS, 6               ;-------------------Banco 1------------------
+0007   30FF           00252     MOVLW       .255
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0008   0086           00253     MOVWF       TRISB                   ;Puerto B como entrada
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0009   0185           00254     CLRF                TRISA                   ;Seleccion de displays.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000A   0188           00255     CLRF                TRISD                   ;Displays.
+                      00256     ;------------------------Configuracion de ADC-----------------------------------------
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000B   139F           00257     BCF         ADCON1, ADFM            ;Justificado a la izquierda.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000C   129F           00258     BCF         ADCON1, VCFG1           ;Ref: VSS.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000D   121F           00259     BCF         ADCON1, VCFG0           ;Ref: VDD.
+                      00260      ;-----------------Configuracion de Recepcion/transmision-----------------------------
+000E   3019           00261    MOVLW        .25
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000F   0099           00262     MOVWF       SPBRG                   ;Baud Rate 9615.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0010   1518           00263     BSF         TXSTA, 2                ;Modo de alta velocidad.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0011   1218           00264     BCF         TXSTA, 4                ;Modo Asincronico.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0012   1698           00265     BSF         TXSTA,  5               ;Bit de transmicion activo.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0013   1318           00266     BCF         TXSTA,  6               ;Transmicion de 8 bits.
+                      00267     ;-------------------Configuracion de Interrupcion--------------------------------------
+0014   3081           00268    MOVLW        CONFG_TMR0
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0015   0081           00269    MOVWF        OPTION_REG
+0016   178B           00270     BSF         INTCON, GIE             ;Se habilitaron la interrupciones globales,
+0017   170B           00271     BSF         INTCON, PEIE            ;perifericas,
+0018   168B           00272     BSF         INTCON, T0IE            ;del TRM0.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0019   170C           00273     BSF         PIE1, ADIE              ;y la interrupciones por el A/D.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001A   168C           00274     BSF         PIE1,RCIE
+001B   1283           00275     BCF         STATUS, 5               ;-------------------Banco 0------------------
+001C   3069           00276     MOVLW       B'01101001'             ;Fosc/8, ANS10 & conversion activada.
+001D   009F           00277     MOVWF       ADCON0
+                      00278 ;-----------------Configuracion de Recepcion/transmision-------------------------------
+001E   1798           00279     BSF         RCSTA, SPEN             ;Habilitar puerto serial.
+001F   1618           00280     BSF         RCSTA, CREN             ;Habilitar recepcion continua.
+0020   1318           00281     BCF         RCSTA, RX9              ;Recepcion de 8 bits.
+                      00282    ;----------------------------Se limpian los puertos-------------------------------------
+0021   0185           00283     CLRF                PORTA
+0022   0186           00284     CLRF                PORTB
+0023   0188           00285     CLRF                PORTD
+                      00286     ;----------------------------Se limpian las variables------------------------------------
+0024   01??           00287     CLRF                FLAGS
+0025   01??           00288     CLRF                VAR_CDU
+MPASM 5.77                     PROYECTO2.ASM   10-27-2020  10:30:14         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0026   01??           00289     CLRF                VAR_U
+0027   01??           00290     CLRF                VAR_D
+0028   01??           00291     CLRF                VAR_C
+0029   01??           00292     CLRF                VAR_X
+002A   01??           00293     CLRF                VARX_U
+002B   01??           00294     CLRF                VARX_D
+002C   01??           00295     CLRF                VARX_C
+002D   01??           00296     CLRF                VAR_Y
+002E   01??           00297     CLRF                VARY_U
+002F   01??           00298     CLRF                VARY_D
+0030   01??           00299     CLRF                VARY_C
+0031   01??           00300     CLRF                DISY_L
+0032   01??           00301     CLRF                DISY_M
+0033   01??           00302     CLRF                DISY_H
+0034   01??           00303     CLRF                DISX_L
+0035   01??           00304     CLRF                DISX_M
+0036   01??           00305     CLRF                DISX_H
+0037   01??           00306     CLRF                VAR_XY
+0038   01??           00307     CLRF                DIS_XY
+0039   01??           00308     CLRF                DATA_1
+003A   01??           00309     CLRF                DATA_2
+003B   01??           00310     CLRF                DATA_3
+003C   01??           00311     CLRF                DATA_REC
+003D   01??           00312     CLRF                CONT_DATA
+003E   149F           00313     BSF         ADCON0,GO
+003F                  00314 LOOP:
+                      00315     
+                      00316 ;-------------------------------------Eje y-----------------------------------------------
+003F   08??           00317     MOVF                VAR_Y, W
+0040   00??           00318     MOVWF       VAR_CDU         ;Se mueve el valor del ADC a la variable general
+0041   2???           00319     CALL                CONV_NO         ;Se llama a la funcion para pasar el valor de unidades, decenas 
                             y centenas
-                      00245     
-003B   08??           00246     MOVF                VAR_C, W
-003C   00??           00247     MOVWF       VARX_C          ;Valor de las centanas que se van a enviar
-                      00248     
-003D   08??           00249     MOVF                VAR_D, W
-003E   00??           00250     MOVWF       VARX_D          ;Valor de las decenas que se van a enviar
-                      00251     
-003F   08??           00252     MOVF                VAR_U, W
-0040   00??           00253     MOVWF       VARX_U          ;Valor de las unidades que se van a enviar 
-                      00254 ;-------------------------------------Eje y-----------------------------------------------
-0041   08??           00255     MOVF                VAR_Y, W
-0042   00??           00256     MOVWF       VAR_CDU         ;Se mueve el valor del ADC a la variable general
-0043   2???           00257     CALL                CONV_NO         ;Se llama a la funcion para pasar el valor de unidades, decenas 
+                      00320 
+0042   08??           00321     MOVF                VAR_C, W
+0043   00??           00322     MOVWF       VARY_C                  ;Valor de las centanas que se van a enviar
+                      00323 
+0044   08??           00324     MOVF                VAR_D, W
+0045   00??           00325     MOVWF       VARY_D          ;Valor de las decenas que se van a enviar
+                      00326 
+0046   08??           00327     MOVF                VAR_U, W
+0047   00??           00328     MOVWF       VARY_U          ;Valor de las unidades que se van a enviar
+                      00329 ;-------------------------------------Eje x-----------------------------------------------
+0048   08??           00330     MOVF                VAR_X, W
+0049   00??           00331     MOVWF       VAR_CDU         ;Se mueve el valor del ADC a la variable general
+004A   2???           00332     CALL                CONV_NO         ;Se llama a la funcion para pasar el valor de unidades, decenas 
                             y centenas
-                      00258   
-0044   08??           00259     MOVF                VAR_C, W
-0045   00??           00260     MOVWF       VARY_C                  ;Valor de las centanas que se van a enviar 
-                      00261     
-0046   08??           00262     MOVF                VAR_D, W
-0047   00??           00263     MOVWF       VARY_D          ;Valor de las decenas que se van a enviar
-                      00264     
-0048   08??           00265     MOVF                VAR_U, W
-0049   00??           00266     MOVWF       VARY_U          ;Valor de las unidades que se van a enviar
-004A                  00267 SEND:
-004A   2???           00268     CALL                ENVIO_DATOS
-                      00269     
-004B   2???           00270     GOTO                LOOP 
-                      00271     ;Configurar los datos recibidos en valor de los display, limitado por coma.
-                      00272 ;-----------------------------------------Subrutinas-------------------------------------  
-004C                  00273 CONV_NO
-004C   01??           00274     CLRF                VAR_U                   ;se obtienen los valores de las centenas, 
-004D   01??           00275    CLRF         VAR_D                   ;decenas y unidades independientemente
-004E   01??           00276    CLRF         VAR_C                   ;del eje con el que se trabaje.
-004F                  00277 CENTENAS:
-004F   3064           00278    MOVLW        .100                    ;Se le resta un valor, en este caso .100,
-0050   02??           00279    SUBWF        VAR_CDU, W              ;luego se verifica si la variable es menor al 
-0051   1C03           00280    BTFSS                STATUS, C               ;valor sustraido, si es menor se procede a la
-0052   2???           00281    GOTO         DECENAS         ;siguiente posición caso contrario se repite el
-Message[305]: Using default destination of 1 (file).
-0053   0A??           00282    INCF         VAR_C                   ;procedimiento antes descrito hasta que la va- 
-0054   00??           00283    MOVWF        VAR_CDU         ;riable tenga un valor menor al sustraido. 
-0055   2???           00284    GOTO         CENTENAS
-0056                  00285 DECENAS:
-MPASM 5.77                     PROYECTO2.ASM   10-25-2020  3:10:08         PAGE  7
+                      00333 
+004B   08??           00334     MOVF                VAR_C, W
+004C   00??           00335     MOVWF       VARX_C          ;Valor de las centanas que se van a enviar
+                      00336 
+004D   08??           00337     MOVF                VAR_D, W
+004E   00??           00338     MOVWF       VARX_D          ;Valor de las decenas que se van a enviar
+                      00339 
+MPASM 5.77                     PROYECTO2.ASM   10-27-2020  10:30:14         PAGE  8
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0056   300A           00286    MOVLW        .10                     ;El procedimiento descrito en Centenas, apli-
-0057   02??           00287    SUBWF        VAR_CDU, W              ;ca para decenas. 
-0058   1C03           00288    BTFSS                STATUS, C
-0059   2???           00289    GOTO         UNIDADES
-Message[305]: Using default destination of 1 (file).
-005A   0A??           00290    INCF         VAR_D
-005B   00??           00291    MOVWF        VAR_CDU
-005C   2???           00292    GOTO         DECENAS
-005D                  00293 UNIDADES:
-005D   3001           00294    MOVLW        .1                      ;El procedimiento descrito en Centenas, apli-
-005E   02??           00295    SUBWF        VAR_CDU, W              ;ca para unidades. 
-005F   1C03           00296    BTFSS                STATUS, C
-0060   0008           00297    RETURN
-Message[305]: Using default destination of 1 (file).
-0061   0A??           00298    INCF         VAR_U
-0062   00??           00299    MOVWF        VAR_CDU
-0063   2???           00300    GOTO         UNIDADES
-                      00301    
-0064                  00302 ENVIO_DATOS
-0064   1E0C           00303    BTFSS                PIR1,  TXIF                 ;Se revisa si esta ocupado
-0065   0008           00304    RETURN                                   ;si lo esta regresa al loop.
-0066   08??           00305    MOVF         EJE_XY, W                   ;Sirve para saber
-0067   0782           00306    ADDWF        PCL,F                       ;que dato se debe de enviar:
-0068   2???           00307    GOTO         DATO_1                      ;Centenas de x
-0069   2???           00308    GOTO         DATO_2              ;Decenas de x
-006A   2???           00309    GOTO         DATO_3              ;unidades de x
-006B   2???           00310    GOTO         SEPARADOR                   
-006C   2???           00311    GOTO         DATO_4              ;mismo orden de x, solo que 
-006D   2???           00312    GOTO         DATO_5              ;esta ves para y
-006E   2???           00313    GOTO         DATO_6
-006F   2???           00314    GOTO         FIN_LINEA
-0070                  00315 DATO_1:                             ;se mueve el valor actual y se le suma una 
-0070   08??           00316     MOVF                VARX_C, W                   ;literal de .48 para ajustarlo a su caracter ASCII
-0071   2???           00317     GOTO                AJUSTE              ;este procedimiento se repite en todos los "DATO_N".
-0072                  00318 DATO_2:
-0072   08??           00319     MOVF                VARX_D, W
-0073   2???           00320     GOTO                AJUSTE
-0074                  00321 DATO_3:
-0074   08??           00322     MOVF                VARX_U, W
-0075   2???           00323     GOTO                AJUSTE
-0076                  00324 SEPARADOR:
-0076   302C           00325     MOVLW       COMA                        ;Caracter especifico para separar las 
-0077   2???           00326     GOTO                ENVIO                       ;coordenadas.
-0078                  00327 DATO_4:
-0078   08??           00328     MOVF                VARY_C, W
-0079   2???           00329     GOTO                AJUSTE
-007A                  00330 DATO_5:
-007A   08??           00331     MOVF                VARY_D, W
-007B   2???           00332     GOTO                AJUSTE
-007C                  00333 DATO_6:
-007C   08??           00334     MOVF                VARY_U, W
-007D   2???           00335     GOTO                AJUSTE
-007E                  00336 FIN_LINEA:
-MPASM 5.77                     PROYECTO2.ASM   10-25-2020  3:10:08         PAGE  8
+004F   08??           00340     MOVF                VAR_U, W
+0050   00??           00341     MOVWF       VARX_U          ;Valor de las unidades que se van a enviar
+0051                  00342 SEND:
+0051   2???           00343     CALL                ENVIO_DATOS
+                      00344 
+0052   2???           00345     GOTO                LOOP
+                      00346     
+0053                  00347 ENVIO_DATOS
+0053   1E0C           00348    BTFSS                PIR1,  TXIF                 ;Se revisa si esta ocupado
+0054   0008           00349    RETURN                                  ;si lo esta regresa al loop.
+0055   08??           00350    MOVF         VAR_XY, W                   ;Sirve para saber
+0056   0782           00351    ADDWF        PCL,F                       ;que dato se debe de enviar:
+0057   2???           00352    GOTO         DATO_1                      ;Centenas de x
+0058   2???           00353    GOTO         DATO_2              ;Decenas de x
+0059   2???           00354    GOTO         DATO_3              ;unidades de x
+005A   2???           00355    GOTO         SEPARADOR
+005B   2???           00356    GOTO         DATO_4              ;mismo orden de x, solo que
+005C   2???           00357    GOTO         DATO_5              ;esta ves para y
+005D   2???           00358    GOTO         DATO_6
+005E   2???           00359    GOTO         FIN_LINEA
+005F   01??           00360    CLRF         VAR_XY
+0060                  00361 DATO_1:                             ;se mueve el valor actual y se le suma una
+0060   08??           00362     MOVF                VARX_C, W                   ;literal de .48 para ajustarlo a su caracter ASCII
+0061   2???           00363     GOTO                AJUSTE              ;este procedimiento se repite en todos los "DATO_N".
+0062                  00364 DATO_2:
+0062   08??           00365     MOVF                VARX_D, W
+0063   2???           00366     GOTO                AJUSTE
+0064                  00367 DATO_3:
+0064   08??           00368     MOVF                VARX_U, W
+0065   2???           00369     GOTO                AJUSTE
+0066                  00370 SEPARADOR:
+0066   302C           00371     MOVLW       COMA                        ;Caracter especifico para separar las
+0067   2???           00372     GOTO                ENVIO                       ;coordenadas.
+0068                  00373 DATO_4:
+0068   08??           00374     MOVF                VARY_C, W
+0069   2???           00375     GOTO                AJUSTE
+006A                  00376 DATO_5:
+006A   08??           00377     MOVF                VARY_D, W
+006B   2???           00378     GOTO                AJUSTE
+006C                  00379 DATO_6:
+006C   08??           00380     MOVF                VARY_U, W
+006D   2???           00381     GOTO                AJUSTE
+006E                  00382 FIN_LINEA:
+006E   300A           00383     MOVLW       NUEVA_LINEA              ;Sirve para saber que las coordenadas
+006F   2???           00384     GOTO                ENVIO                    ;se han enviado completamente.
+0070                  00385 AJUSTE:
+0070   3E30           00386     ADDLW       CON_ASCII               ;equivale a 48 base 10.
+0071                  00387 ENVIO:
+0071   0099           00388     MOVWF       TXREG
+0072   0A??           00389     INCF                VAR_XY, F
+0073   0008           00390     RETURN
+                      00391     ;Configurar los datos recibidos en valor de los display, limitado por coma.
+                      00392 ;-----------------------------------------Subrutinas-------------------------------------
+MPASM 5.77                     PROYECTO2.ASM   10-27-2020  10:30:14         PAGE  9
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-007E   300A           00337     MOVLW       NUEVA_LINEA              ;Sirve para saber que las coordenadas
-007F   2???           00338     GOTO                ENVIO                    ;se han enviado completamente.
-0080                  00339 AJUSTE:
-0080   3E30           00340     ADDLW       CON_ASCII               ;equivale a 48 base 10.
-0081                  00341 ENVIO:
-0081   009A           00342     MOVWF       RCREG
-0082   0A??           00343     INCF                EJE_XY, F
-0083   0008           00344     RETURN
-20D4 3FFF             00345     END
-MPASM 5.77                     PROYECTO2.ASM   10-25-2020  3:10:08         PAGE  9
+0074                  00393 CONV_NO
+0074   01??           00394     CLRF                VAR_U                   ;se obtienen los valores de las centenas,
+0075   01??           00395    CLRF         VAR_D                   ;decenas y unidades independientemente
+0076   01??           00396    CLRF         VAR_C                   ;del eje con el que se trabaje.
+0077                  00397 CENTENAS:
+0077   3064           00398    MOVLW        .100                    ;Se le resta un valor, en este caso .100,
+0078   02??           00399    SUBWF        VAR_CDU, W              ;luego se verifica si la variable es menor al
+0079   1C03           00400    BTFSS                STATUS, C               ;valor sustraido, si es menor se procede a la
+007A   2???           00401    GOTO         DECENAS         ;siguiente posici?n caso contrario se repite el
+007B   0A??           00402    INCF         VAR_C, F                ;procedimiento antes descrito hasta que la va-
+007C   00??           00403    MOVWF        VAR_CDU         ;riable tenga un valor menor al sustraido.
+007D   2???           00404    GOTO         CENTENAS
+007E                  00405 DECENAS:
+007E   300A           00406    MOVLW        .10                     ;El procedimiento descrito en Centenas, apli-
+007F   02??           00407    SUBWF        VAR_CDU, W              ;ca para decenas.
+0080   1C03           00408    BTFSS                STATUS, C
+0081   2???           00409    GOTO         UNIDADES
+0082   0A??           00410    INCF         VAR_D,F 
+0083   00??           00411    MOVWF        VAR_CDU
+0084   2???           00412    GOTO         DECENAS
+0085                  00413 UNIDADES:
+0085   3001           00414    MOVLW        .1                      ;El procedimiento descrito en Centenas, apli-
+0086   02??           00415    SUBWF        VAR_CDU, W              ;ca para unidades.
+0087   1C03           00416    BTFSS                STATUS, C
+0088   0008           00417    RETURN
+0089   0A??           00418    INCF         VAR_U,F         
+008A   00??           00419    MOVWF        VAR_CDU
+008B   2???           00420    GOTO         UNIDADES
+                      00421 
+20D4 3FFF             00422     END
+MPASM 5.77                     PROYECTO2.ASM   10-27-2020  10:30:14         PAGE 10
 
 
 SYMBOL TABLE
@@ -441,7 +521,7 @@ ADCON0                            0000001F
 ADCON1                            0000009F
 ADCS0                             00000006
 ADCS1                             00000007
-ADC_C                             00000012
+ADC_C                             00000042
 ADDEN                             00000003
 ADFM                              00000007
 ADIE                              00000006
@@ -449,7 +529,7 @@ ADIF                              00000006
 ADON                              00000000
 ADRESH                            0000001E
 ADRESL                            0000009E
-AJUSTE                            00000080
+AJUSTE                            00000070
 ANS0                              00000000
 ANS1                              00000001
 ANS10                             00000002
@@ -485,7 +565,7 @@ BRG4                              00000004
 BRG5                              00000005
 BRG6                              00000006
 BRG7                              00000007
-MPASM 5.77                     PROYECTO2.ASM   10-25-2020  3:10:08         PAGE 10
+MPASM 5.77                     PROYECTO2.ASM   10-27-2020  10:30:14         PAGE 11
 
 
 SYMBOL TABLE
@@ -542,9 +622,9 @@ CCPR1L                            00000015
 CCPR2                             0000001B
 CCPR2H                            0000001C
 CCPR2L                            0000001B
-CENTENAS                          0000004F
+CENTENAS                          00000077
 CHS0                              00000002
-MPASM 5.77                     PROYECTO2.ASM   10-25-2020  3:10:08         PAGE 11
+MPASM 5.77                     PROYECTO2.ASM   10-27-2020  10:30:14         PAGE 12
 
 
 SYMBOL TABLE
@@ -560,55 +640,60 @@ CM2CON0                           00000108
 CM2CON1                           00000109
 COMA                              0000002C
 CONFG_TMR0                        00000081
-CONT1                             00000000
-CONT2                             00000001
+CONT_DATA                         0000001C
 CONT_TMR0                         00000006
-CONV_NO                           0000004C
+CONV_NO                           00000074
 CON_ASCII                         00000030
 CREN                              00000004
 CSRC                              00000007
 D                                 00000005
+DATA_1                            00000018
+DATA_2                            00000019
+DATA_3                            0000001A
 DATA_ADDRESS                      00000005
-DATA_Y                            00000019
-DATO_1                            00000070
-DATO_2                            00000072
-DATO_3                            00000074
-DATO_4                            00000078
-DATO_5                            0000007A
-DATO_6                            0000007C
+DATA_REC                          0000001B
+DATA_X                            00000049
+DATO_1                            00000060
+DATO_2                            00000062
+DATO_3                            00000064
+DATO_4                            00000068
+DATO_5                            0000006A
+DATO_6                            0000006C
 DC                                00000001
 DC1B0                             00000004
 DC1B1                             00000005
 DC2B0                             00000004
 DC2B1                             00000005
-DECENAS                           00000056
-DISPLAY                           00000039
+DECENAS                           0000007E
+DISPLAY                           0000006C
 DISPLAYS_X                        00000001
-DISPLAY_0                         00000043
-DISPLAY_1                         00000048
-DISPLAY_2                         0000004D
-DISPLAY_3                         00000052
-DISPLAY_4                         00000057
-DISPLAY_5                         0000005C
-DISX_H                            00000013
-DISX_L                            00000011
-DISX_M                            00000012
-DISY_H                            00000010
-DISY_L                            0000000E
-DISY_M                            0000000F
+DISPLAY_0                         00000076
+DISPLAY_1                         0000007B
+DISPLAY_2                         00000080
+DISPLAY_3                         00000085
+DISPLAY_4                         0000008A
+DISPLAY_5                         0000008F
+DISX_H                            00000012
+DISX_L                            00000010
+DISX_M                            00000011
+DISY_H                            0000000F
+DISY_L                            0000000D
+DISY_M                            0000000E
+DIS_CDU                           00000013
+DIS_XY                            00000014
 D_A                               00000005
 D_NOT_A                           00000005
-ECCPAS                            0000009C
-ECCPAS0                           00000004
-ECCPAS1                           00000005
-ECCPAS2                           00000006
-ECCPASE                           00000007
-MPASM 5.77                     PROYECTO2.ASM   10-25-2020  3:10:08         PAGE 12
+MPASM 5.77                     PROYECTO2.ASM   10-27-2020  10:30:14         PAGE 13
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+ECCPAS                            0000009C
+ECCPAS0                           00000004
+ECCPAS1                           00000005
+ECCPAS2                           00000006
+ECCPASE                           00000007
 EEADR                             0000010D
 EEADRH                            0000010F
 EECON1                            0000018C
@@ -619,12 +704,11 @@ EEDATH                            0000010E
 EEIE                              00000004
 EEIF                              00000004
 EEPGD                             00000007
-EJE_XY                            00000014
-ENVIO                             00000081
-ENVIO_DATOS                       00000064
+ENVIO                             00000071
+ENVIO_DATOS                       00000053
 F                                 00000001
 FERR                              00000002
-FIN_LINEA                         0000007E
+FIN_LINEA                         0000006E
 FLAGS                             00000015
 FSR                               00000004
 FVREN                             00000000
@@ -633,13 +717,14 @@ GIE                               00000007
 GO                                00000001
 GO_DONE                           00000001
 GO_NOT_DONE                       00000001
+GUARDAR                           0000002D
 HTS                               00000002
 I2C_DATA                          00000005
 I2C_READ                          00000002
 I2C_START                         00000003
 I2C_STOP                          00000004
 INDF                              00000000
-INICIO_CON                        00000021
+INICIO_CON                        0000004E
 INTCON                            0000000B
 INTE                              00000004
 INTEDG                            00000006
@@ -657,18 +742,19 @@ IRCF0                             00000004
 IRCF1                             00000005
 IRCF2                             00000006
 IRP                               00000007
-ISR                               00000007
-LOAD                              00000027
-LOOP                              00000038
-LTS                               00000001
-MC1OUT                            00000007
-MPASM 5.77                     PROYECTO2.ASM   10-25-2020  3:10:08         PAGE 13
+MPASM 5.77                     PROYECTO2.ASM   10-27-2020  10:30:14         PAGE 14
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+ISR                               00000007
+LOAD                              00000054
+LOOP                              0000003F
+LTS                               00000001
+MC1OUT                            00000007
 MC2OUT                            00000006
+MIRAR_SALTO                       00000021
 MSK                               00000093
 MSK0                              00000000
 MSK1                              00000001
@@ -678,7 +764,7 @@ MSK4                              00000004
 MSK5                              00000005
 MSK6                              00000006
 MSK7                              00000007
-MUX                               0000000D
+MUX                               0000000E
 NOT_A                             00000005
 NOT_ADDRESS                       00000005
 NOT_BO                            00000000
@@ -715,18 +801,18 @@ PDC4                              00000004
 PDC5                              00000005
 PDC6                              00000006
 PEIE                              00000006
+MPASM 5.77                     PROYECTO2.ASM   10-27-2020  10:30:14         PAGE 15
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
 PEN                               00000002
 PIE1                              0000008C
 PIE2                              0000008D
 PIR1                              0000000C
 PIR2                              0000000D
 PORTA                             00000005
-MPASM 5.77                     PROYECTO2.ASM   10-25-2020  3:10:08         PAGE 14
-
-
-SYMBOL TABLE
-  LABEL                             VALUE 
-
 PORTB                             00000006
 PORTC                             00000007
 PORTD                             00000008
@@ -744,6 +830,7 @@ PSSBD1                            00000001
 PSTRCON                           0000009D
 PULSR                             00000002
 PULSS                             00000003
+PUNTO_COMA                        0000003B
 PWM1CON                           0000009B
 R                                 00000002
 RA0                               00000000
@@ -773,6 +860,12 @@ RC5                               00000005
 RC6                               00000006
 RC7                               00000007
 RC8_9                             00000006
+MPASM 5.77                     PROYECTO2.ASM   10-27-2020  10:30:14         PAGE 16
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
 RC9                               00000006
 RCD8                              00000000
 RCEN                              00000003
@@ -780,12 +873,6 @@ RCIDL                             00000006
 RCIE                              00000005
 RCIF                              00000005
 RCREG                             0000001A
-MPASM 5.77                     PROYECTO2.ASM   10-25-2020  3:10:08         PAGE 15
-
-
-SYMBOL TABLE
-  LABEL                             VALUE 
-
 RCSTA                             00000018
 RD                                00000000
 RD0                               00000000
@@ -801,7 +888,10 @@ RE1                               00000001
 RE2                               00000002
 RE3                               00000003
 READ_WRITE                        00000002
-RECEPCION                         0000001E
+RECEPCION                         00000014
+RECIVIDO_1                        00000033
+RECIVIDO_2                        00000038
+RECIVIDO_3                        0000003D
 RP0                               00000005
 RP1                               00000006
 RSEN                              00000001
@@ -815,9 +905,9 @@ SBOREN                            00000004
 SCKP                              00000004
 SCS                               00000000
 SEN                               00000000
-SEND                              0000004A
+SEND                              00000051
 SENDB                             00000003
-SEPARADOR                         00000076
+SEPARADOR                         00000066
 SMP                               00000007
 SPBRG                             00000099
 SPBRGH                            0000009A
@@ -829,6 +919,12 @@ SREN                              00000005
 SSPADD                            00000093
 SSPBUF                            00000013
 SSPCON                            00000014
+MPASM 5.77                     PROYECTO2.ASM   10-27-2020  10:30:14         PAGE 17
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
 SSPCON2                           00000091
 SSPEN                             00000005
 SSPIE                             00000003
@@ -839,12 +935,6 @@ SSPM2                             00000002
 SSPM3                             00000003
 SSPMSK                            00000093
 SSPOV                             00000006
-MPASM 5.77                     PROYECTO2.ASM   10-25-2020  3:10:08         PAGE 16
-
-
-SYMBOL TABLE
-  LABEL                             VALUE 
-
 SSPSTAT                           00000094
 START                             00000000
 STATUS                            00000003
@@ -871,7 +961,7 @@ T1SYNC                            00000002
 T2CKPS0                           00000000
 T2CKPS1                           00000001
 T2CON                             00000012
-TABLA                             0000002D
+TABLA                             0000005A
 TEMP_STATUS                       00000016
 TEMP_W                            00000017
 TMR0                              00000001
@@ -888,6 +978,12 @@ TMR1ON                            00000000
 TMR2                              00000011
 TMR2IE                            00000001
 TMR2IF                            00000001
+MPASM 5.77                     PROYECTO2.ASM   10-27-2020  10:30:14         PAGE 18
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
 TMR2ON                            00000002
 TOUTPS0                           00000003
 TOUTPS1                           00000004
@@ -898,12 +994,6 @@ TRISA0                            00000000
 TRISA1                            00000001
 TRISA2                            00000002
 TRISA3                            00000003
-MPASM 5.77                     PROYECTO2.ASM   10-25-2020  3:10:08         PAGE 17
-
-
-SYMBOL TABLE
-  LABEL                             VALUE 
-
 TRISA4                            00000004
 TRISA5                            00000005
 TRISA6                            00000006
@@ -947,6 +1037,12 @@ TUN2                              00000002
 TUN3                              00000003
 TUN4                              00000004
 TX8_9                             00000006
+MPASM 5.77                     PROYECTO2.ASM   10-27-2020  10:30:14         PAGE 19
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
 TX9                               00000006
 TX9D                              00000000
 TXD8                              00000000
@@ -957,28 +1053,23 @@ TXREG                             00000019
 TXSTA                             00000098
 UA                                00000001
 ULPWUE                            00000005
-MPASM 5.77                     PROYECTO2.ASM   10-25-2020  3:10:08         PAGE 18
-
-
-SYMBOL TABLE
-  LABEL                             VALUE 
-
 ULPWUIE                           00000002
 ULPWUIF                           00000002
-UNIDADES                          0000005D
+UNIDADES                          00000085
 VALOR_CERO                        00000000
-VARX_C                            00000009
-VARX_D                            00000008
-VARX_U                            00000007
-VARY_C                            0000000D
-VARY_D                            0000000C
-VARY_U                            0000000B
-VAR_C                             00000005
-VAR_CDU                           00000002
-VAR_D                             00000004
-VAR_U                             00000003
-VAR_X                             00000006
-VAR_Y                             0000000A
+VARX_C                            00000007
+VARX_D                            00000006
+VARX_U                            00000005
+VARY_C                            0000000B
+VARY_D                            0000000A
+VARY_U                            00000009
+VAR_C                             00000003
+VAR_CDU                           00000000
+VAR_D                             00000002
+VAR_U                             00000001
+VAR_X                             00000004
+VAR_XY                            0000000C
+VAR_Y                             00000008
 VCFG0                             00000004
 VCFG1                             00000005
 VR0                               00000000
@@ -1005,6 +1096,12 @@ WPUB3                             00000003
 WPUB4                             00000004
 WPUB5                             00000005
 WPUB6                             00000006
+MPASM 5.77                     PROYECTO2.ASM   10-27-2020  10:30:14         PAGE 20
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
 WPUB7                             00000007
 WR                                00000001
 WREN                              00000002
@@ -1016,12 +1113,6 @@ _BOR40V                           00003FFF
 _BOR4V_BOR21V                     00003EFF
 _BOR4V_BOR40V                     00003FFF
 _BOREN_NSLEEP                     00003EFF
-MPASM 5.77                     PROYECTO2.ASM   10-25-2020  3:10:08         PAGE 19
-
-
-SYMBOL TABLE
-  LABEL                             VALUE 
-
 _BOREN_OFF                        00003CFF
 _BOREN_ON                         00003FFF
 _BOREN_SBODEN                     00003DFF
@@ -1064,6 +1155,12 @@ _INTOSC                           00003FFD
 _INTOSCIO                         00003FFC
 _INTRC_OSC_CLKOUT                 00003FFD
 _INTRC_OSC_NOCLKOUT               00003FFC
+MPASM 5.77                     PROYECTO2.ASM   10-27-2020  10:30:14         PAGE 21
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
 _LP_OSC                           00003FF8
 _LVP_OFF                          00002FFF
 _LVP_ON                           00003FFF
@@ -1075,12 +1172,6 @@ _WDTE_OFF                         00003FF7
 _WDTE_ON                          00003FFF
 _WDT_OFF                          00003FF7
 _WDT_ON                           00003FFF
-MPASM 5.77                     PROYECTO2.ASM   10-25-2020  3:10:08         PAGE 20
-
-
-SYMBOL TABLE
-  LABEL                             VALUE 
-
 _WRT_1FOURTH                      00003BFF
 _WRT_256                          00003DFF
 _WRT_HALF                         000039FF
@@ -1090,6 +1181,6 @@ __16F887                          00000001
 
 Errors   :     0
 Warnings :     0 reported,     0 suppressed
-Messages :    20 reported,     0 suppressed
+Messages :    18 reported,     0 suppressed
 
 

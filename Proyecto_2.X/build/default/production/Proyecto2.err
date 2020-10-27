@@ -1,20 +1,18 @@
-Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 180 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 181 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 182 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 183 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 186 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 187 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 188 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 190 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 191 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 192 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 194 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 195 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 196 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 197 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 198 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 201 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 205 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[305] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 282 : Using default destination of 1 (file).
-Message[305] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 290 : Using default destination of 1 (file).
-Message[305] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 298 : Using default destination of 1 (file).
+Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 247 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 248 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 249 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 250 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 253 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 254 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 255 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 257 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 258 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 259 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 262 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 263 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 264 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 265 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 266 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 269 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 273 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\DANIEL\DOCUMENTS\GITHUB\PROYECTO2_ETCH_A_SKETCH\PROYECTO_2.X\PROYECTO2.ASM 274 : Register in operand not in bank 0.  Ensure that bank bits are correct.
